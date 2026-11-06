@@ -117,6 +117,25 @@ test("찜 중복 409만 성공으로 취급하며 다른 서버 오류는 보존
   );
 });
 
+test("찜 추가의 빈 201은 허용하지만 목록의 빈 응답과 잘못된 JSON은 거부한다", async () => {
+  let body = null;
+  const request = createApiClient({
+    fetcher: async (_url, { method }) =>
+      new Response(body, { status: method === "POST" ? 201 : 200 }),
+  });
+  const likes = createLikesApi(request);
+  await likes.addLike("123");
+  await assert.rejects(
+    request("/api/festivals"),
+    (error) => error.code === "INVALID_RESPONSE",
+  );
+  body = "<html>not json</html>";
+  await assert.rejects(
+    likes.addLike("123"),
+    (error) => error.code === "INVALID_RESPONSE",
+  );
+});
+
 test("찜 목록 50개를 넘으면 뒷 페이지도 읽고 중복은 제거한다", async () => {
   const pages = [];
   const likes = createLikesApi(async (_path, { query }) => {
@@ -172,4 +191,29 @@ test("요청 취소와 서버 지연을 구분한다", async () => {
     request("/api/festivals", { signal: controller.signal }),
     (error) => error.name === "AbortError",
   );
+});
+
+test("절전 상태의 개발 서버가 약 1분 뒤 응답해도 기본 요청은 완료된다", async (context) => {
+  context.mock.timers.enable({ apis: ["setTimeout"] });
+  const result = { items: [], page: 1, size: 20, total: 0 };
+  const request = createApiClient({
+    fetcher: (_url, { signal }) =>
+      new Promise((resolve, reject) => {
+        const responseTimer = setTimeout(
+          () => resolve(Response.json(result)),
+          60000,
+        );
+        signal.addEventListener(
+          "abort",
+          () => {
+            clearTimeout(responseTimer);
+            reject(new DOMException("Aborted", "AbortError"));
+          },
+          { once: true },
+        );
+      }),
+  });
+  const pending = request("/api/festivals");
+  context.mock.timers.tick(60000);
+  assert.deepEqual(await pending, result);
 });

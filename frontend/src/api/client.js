@@ -12,11 +12,12 @@ export function createApiClient({
   getToken = () => null,
   onUnauthorized = () => {},
   fetcher = globalThis.fetch,
-  timeoutMs = 12000,
+  // Render 개발 서버가 절전에서 깨어나는 시간(약 1분)을 기다립니다.
+  timeoutMs = 90000,
 } = {}) {
   return async function request(
     path,
-    { query, body, signal, method = "GET" } = {},
+    { query, body, signal, method = "GET", allowEmptyResponse = false } = {},
   ) {
     const search = new URLSearchParams();
     Object.entries(query || {}).forEach(([key, value]) => {
@@ -49,10 +50,15 @@ export function createApiClient({
           ...(body !== undefined ? { body: JSON.stringify(body) } : {}),
         },
       );
-      const content =
-        response.status === 204
-          ? null
-          : await response.json().catch(() => null);
+      const responseText = response.status === 204 ? "" : await response.text();
+      let content = null;
+      if (responseText.trim()) {
+        try {
+          content = JSON.parse(responseText);
+        } catch {
+          // 성공 응답이라도 잘못된 JSON을 빈 응답으로 취급하지 않습니다.
+        }
+      }
       if (!response.ok) {
         if (response.status === 401) onUnauthorized();
         throw new ApiError(
@@ -63,7 +69,11 @@ export function createApiClient({
             : "요청을 처리하지 못했어요. 잠시 후 다시 시도해 주세요.",
         );
       }
-      if (response.status !== 204 && content === null)
+      if (
+        response.status !== 204 &&
+        content === null &&
+        !(allowEmptyResponse && !responseText.trim())
+      )
         throw new ApiError(
           response.status,
           "INVALID_RESPONSE",

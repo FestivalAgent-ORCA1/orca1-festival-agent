@@ -25,6 +25,7 @@ export function createLikesApi(request) {
         await request("/api/likes", {
           method: "POST",
           body: { content_id: id },
+          allowEmptyResponse: true,
         });
       } catch (error) {
         if (error.status !== 409 || error.code !== "ALREADY_LIKED") throw error;

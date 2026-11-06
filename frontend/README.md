@@ -2,6 +2,8 @@
 
 ‘주말의 입장권’ 디자인을 React 화면과 재사용 부품으로 구현했습니다. 기존 저장소의 프론트 파일이 빈 상태여서 실행에 필요한 최소 진입점과 라우터도 함께 작성했습니다. 이 공통 부분은 FE3와 함께 검토해 주세요.
 
+[팀 Figma의 PC·모바일 화면과 공통 컴포넌트](https://www.figma.com/design/XVAdqmWomFrfhcp54p0VDI/ORCA-festival?node-id=25-240)와 [2026-11-06 팀 검토 안내](../docs/2026-11-06-fe1-review.md)를 함께 확인할 수 있습니다.
+
 ## 실행
 
 Node.js 22.12 이상과 pnpm 11.25.0을 사용합니다.
@@ -42,9 +44,9 @@ VITE_API_BASE_URL=http://localhost:8000
 
 - 주소에는 `/api`를 붙이지 않습니다. 같은 도메인 프록시를 쓰면 빈 값도 가능합니다.
 - `VITE_` 변수는 브라우저에 공개됩니다. 비밀번호나 서비스 비밀 키를 넣지 않습니다.
-- API는 [공유 브랜치의 api-spec.md](https://github.com/FestivalAgent-ORCA1/orca1-festival-agent/blob/be1-SH/docs/api-spec.md)를 따릅니다. `content_id`, `area_code`, `is_liked` 등 snake_case를 유지합니다.
-- `api/client.js`는 요청 취소·시간 제한·서버 오류를 처리합니다. 서버 모드의 실패를 예시 데이터로 바꾸지 않습니다.
-- 찜 POST가 성공해야 저장 상태를 바꿉니다. `409 ALREADY_LIKED`는 저장 성공으로 처리하고, 이외 오류는 기존 상태를 유지합니다. 중복 클릭은 요청 중 잠급니다.
+- API는 [develop의 api-spec.md](https://github.com/FestivalAgent-ORCA1/orca1-festival-agent/blob/develop/docs/api-spec.md)를 따릅니다. `content_id`, `area_code`, `is_liked` 등 snake_case를 유지합니다.
+- `api/client.js`는 요청 취소·시간 제한·서버 오류를 처리합니다. 기획서의 Render 첫 응답 대기를 고려해 기본 제한은 90초이며, 클라이언트를 만들 때 `timeoutMs`로 바꿀 수 있습니다. 서버 모드의 실패를 예시 데이터로 바꾸지 않습니다.
+- 찜 POST가 성공해야 저장 상태를 바꿉니다. 본문 없는 성공 응답과 `409 ALREADY_LIKED`는 저장 성공으로 처리하고, 이외 오류는 기존 상태를 유지합니다. 목록의 빈 응답이나 잘못된 JSON은 오류로 처리합니다. 중복 클릭은 요청 중 잠급니다.
 - 내 찜 목록이 50개보다 많으면 뒤 페이지까지 읽습니다.
 - 백엔드의 CORS에는 실제 프론트 주소를 허용해야 합니다. `localhost`와 `127.0.0.1`은 서로 다른 출처입니다.
 
