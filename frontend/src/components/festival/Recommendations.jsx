@@ -8,11 +8,16 @@ import ErrorState from "../common/ErrorState.jsx";
 
 export default function Recommendations({ onPreview }) {
   const { session } = useFavorites();
+  const enabled = repository.mode === "api" && session;
   const resource = useResource(
     useCallback((signal) => repository.getRecommended(signal), []),
-    repository.mode === "api" && session,
+    enabled,
   );
-  if (resource.status === "idle") return null;
+  const needsOnboarding =
+    resource.status === "error" &&
+    resource.error?.status === 400 &&
+    resource.error?.code === "ONBOARDING_REQUIRED";
+  if (!enabled || resource.status === "idle" || needsOnboarding) return null;
   return (
     <section className="wrap recommendations" aria-labelledby="recommend-title">
       <div className="section-head">
