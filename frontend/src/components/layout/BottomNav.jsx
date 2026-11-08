@@ -8,7 +8,7 @@ export default function BottomNav() {
   const items = [
     { to: "/", label: "홈", icon: "home", end: true },
     { to: "/festivals", label: "축제", icon: "search" },
-    { to: "/chat", label: "AI 채팅", icon: "chat" },
+    { to: "/chat", label: "AI 일정", icon: "chat" },
     { to: "/community", label: "커뮤니티", icon: "community" },
     status === "authenticated"
       ? { to: "/profile", label: "내 정보", icon: "user" }
