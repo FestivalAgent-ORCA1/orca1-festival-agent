@@ -1,0 +1,21 @@
+:root {
+  --paper: #f9f7f1;
+  --ink: #242721;
+  --muted: #6d7067;
+  --blue: #2855e7;
+  --lime: #ddedb4;
+  --orange: #ef704d;
+  --line: #d9dacf;
+  --round: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --font-body: Plex, "Malgun Gothic", sans-serif;
+  --font-display: Bagel, Plex, sans-serif;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --radius-control: 100px;
+  --radius-card: 21px;
+  --radius-dialog: 30px;
+}
