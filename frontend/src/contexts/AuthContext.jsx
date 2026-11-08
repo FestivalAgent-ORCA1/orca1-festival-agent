@@ -118,3 +118,9 @@ export function AuthProvider({ children }) {
   );
 }
 export const useAuth = () => useContext(AuthContext);
+
+// 로그인 후 돌아갈 주소는 내부 경로만 허용합니다. 로그인 관련 화면으로 돌아가면 무한 이동이 생기므로 첫 화면으로 보냅니다.
+export function safeRedirect(value) {
+  if (!value || !value.startsWith("/") || value.startsWith("//")) return "/";
+  return /^\/(login|signup|onboarding)(\/|\?|$)/.test(value) ? "/" : value;
+}
