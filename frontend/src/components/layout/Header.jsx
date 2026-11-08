@@ -41,12 +41,17 @@ export default function Header({ onAbout }) {
                 : items.length}
           </span>
         </NavLink>
-        {/* 내 정보 페이지가 생기면 로그인 상태에서는 그곳으로 연결합니다. */}
+        {/* 내 정보 페이지가 생기면 로그인 상태에서는 그곳으로 연결합니다.
+            작은 화면에서는 BottomNav가 이 버튼을 대신합니다. */}
         {auth.status === "authenticated" ? (
-          <Button onClick={auth.logout}>로그아웃</Button>
+          <Button className="nav-auth" onClick={auth.logout}>
+            로그아웃
+          </Button>
         ) : (
           <NavLink
-            className={({ isActive }) => `key ${isActive ? "current" : ""}`}
+            className={({ isActive }) =>
+              `key nav-auth ${isActive ? "current" : ""}`
+            }
             to="/login"
           >
             로그인

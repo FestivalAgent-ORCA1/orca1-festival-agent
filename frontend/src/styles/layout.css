@@ -1,0 +1,49 @@
+/* FE3 공통 레이아웃: 하단 메뉴 */
+.bottom-nav {
+  display: none;
+}
+@media (max-width: 620px) {
+  body {
+    padding-bottom: calc(64px + env(safe-area-inset-bottom, 0px));
+  }
+  .bottom-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    background: rgba(249, 247, 241, 0.96);
+    border-top: 1px solid var(--line);
+    backdrop-filter: blur(8px);
+  }
+  .bottom-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    height: 64px;
+    font-size: 10px;
+    color: var(--muted);
+  }
+  .bottom-nav-item .icon {
+    width: 21px;
+    height: 21px;
+  }
+  .bottom-nav-item[aria-current="page"] {
+    color: var(--blue);
+    font-weight: 600;
+  }
+  .bottom-nav-item[aria-current="page"] .icon {
+    stroke-width: 2.2;
+  }
+  .main-nav .nav-auth {
+    display: none;
+  }
+  .toast {
+    bottom: calc(92px + env(safe-area-inset-bottom, 0px));
+  }
+}

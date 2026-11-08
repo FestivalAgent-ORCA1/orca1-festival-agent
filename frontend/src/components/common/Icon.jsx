@@ -30,6 +30,23 @@ const paths = {
     <path d="M12 1v7m0 8v7M1 12h7m8 0h7M4.2 4.2 9 9m6 6 4.8 4.8M4.2 19.8 9 15m6-6 4.8-4.8" />
   ),
   chevron: <path d="m8 10 4 4 4-4" />,
+  home: <path d="M3 11 12 3l9 8m-16-1.5V21h5v-6h4v6h5V9.5" />,
+  chat: (
+    <path d="M21 12a8 8 0 0 1-11.6 7.1L4 20.5l1.4-4.6A8 8 0 1 1 21 12Z" />
+  ),
+  community: (
+    <>
+      <circle cx="9" cy="8" r="3.4" />
+      <path d="M2.5 20c.6-3.7 3.2-6 6.5-6s5.9 2.3 6.5 6" />
+      <path d="M15.5 4.9a3.4 3.4 0 0 1 0 6.3M18 14.4c2 .9 3.2 2.9 3.5 5.6" />
+    </>
+  ),
+  user: (
+    <>
+      <circle cx="12" cy="8" r="4" />
+      <path d="M4 21c.7-4.2 3.8-7 8-7s7.3 2.8 8 7" />
+    </>
+  ),
 };
 export default function Icon({ name, className = "", ...props }) {
   return (
