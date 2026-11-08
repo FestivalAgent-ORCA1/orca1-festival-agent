@@ -1,5 +1,13 @@
 /* FE2 · 채팅 / 시간표 / 내 일정. 색·간격은 tokens.css, 버튼은 .key·.mood를 그대로 씁니다. */
 
+/* 제목: Bagel 글꼴은 FE1 화면의 글자만 담은 subset이라 FE2 제목은 Plex 굵게 사용 */
+.planner-title {
+  font-family: var(--font-body);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  line-height: 1.2;
+}
+
 /* ── 채팅 페이지 ───────────────────────────── */
 .chat-page {
   max-width: 860px;

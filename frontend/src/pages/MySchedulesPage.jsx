@@ -28,7 +28,7 @@ export default function MySchedulesPage() {
       <header className="page-intro schedules-head">
         <div>
           <span className="eyebrow">MY PLANS</span>
-          <h1 className="display">내가 만든 하루들</h1>
+          <h1 className="planner-title">내가 만든 하루들</h1>
         </div>
         <Button as={Link} to="/chat" variant="blue">
           AI와 새 일정 만들기

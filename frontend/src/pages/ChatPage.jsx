@@ -193,7 +193,7 @@ export default function ChatPage() {
       <header className="chat-head">
         <div>
           <span className="eyebrow">ORCA AI PLANNER</span>
-          <h1 className="display">어떤 하루를 보내고 싶어요?</h1>
+          <h1 className="planner-title">어떤 하루를 보내고 싶어요?</h1>
           <p>축제를 고르고, 방문일만 알려 주시면 주변 장소까지 엮어 시간표를 만들어 드려요.</p>
         </div>
         <Link className="key white" to="/schedules">

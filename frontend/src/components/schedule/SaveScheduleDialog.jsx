@@ -34,7 +34,7 @@ export default function SaveScheduleDialog({ open, defaultTitle = "", onClose, o
     <Modal open={open} title="일정 저장" onClose={saving ? () => {} : onClose} className="planner-dialog">
       <form className="planner-form" onSubmit={submit}>
         <span className="eyebrow">SAVE MY DAY</span>
-        <h2 className="display">이 하루를 저장할까요?</h2>
+        <h2 className="planner-title">이 하루를 저장할까요?</h2>
         <label className="field">
           <span>일정 이름</span>
           <input

@@ -98,7 +98,7 @@ export default function ScheduleDetailPage() {
           <header className="schedule-detail-head">
             <div>
               <span className="eyebrow">MY PLAN</span>
-              <h1 className="display">{draft ? draft.title : schedule.title}</h1>
+              <h1 className="planner-title">{draft ? draft.title : schedule.title}</h1>
               {schedule.festival && (
                 <Link className="schedule-festival-link" to={`/festivals/${encodeURIComponent(schedule.festival.content_id)}`}>
                   {schedule.festival.title} 보러 가기 →
@@ -146,7 +146,7 @@ export default function ScheduleDetailPage() {
 
       <Modal open={confirmDelete} title="일정 삭제" onClose={() => !busy && setConfirmDelete(false)} className="planner-dialog">
         <div className="planner-form">
-          <h2 className="display">이 일정을 삭제할까요?</h2>
+          <h2 className="planner-title">이 일정을 삭제할까요?</h2>
           <p>삭제한 일정은 되돌릴 수 없어요.</p>
           <div className="planner-form-actions">
             <Button variant="white" onClick={() => setConfirmDelete(false)} disabled={busy}>
