@@ -3,6 +3,10 @@ import { createFestivalApi } from "./festivals.js";
 import { createLikesApi } from "./likes.js";
 import { createPlacesApi } from "./places.js";
 import { createDemoRepository } from "./demo.js";
+import { createAgentApi } from "./agent.js";
+import { createItineraryApi } from "./itinerary.js";
+import { createSchedulesApi } from "./schedules.js";
+import { createPlannerDemo } from "./plannerDemo.js";
 
 // FE3 AuthContext 연결점: access_token 저장 후 orca:auth-changed 이벤트를 보냅니다.
 export function getAccessToken() {
@@ -39,11 +43,15 @@ try {
 }
 export const repository =
   mode === "mock"
-    ? createDemoRepository(storage)
+    ? // FE2 채팅·일정 예시. Object.assign으로 storageWarning getter를 유지합니다.
+      Object.assign(createDemoRepository(storage), createPlannerDemo(storage))
     : {
         mode,
         hasSession: () => Boolean(getAccessToken()),
         ...createFestivalApi(request),
         ...createLikesApi(request),
         ...createPlacesApi(request),
+        ...createAgentApi(request),
+        ...createItineraryApi(request),
+        ...createSchedulesApi(request),
       };
