@@ -23,6 +23,21 @@ export default function Header({ onAbout }) {
         >
           축제 찾기
         </NavLink>
+        {/* FE2: AI 채팅 · 내 일정 (내 일정은 작은 화면에서 숨기고 채팅 화면에서 연결) */}
+        <NavLink
+          className={({ isActive }) => `key ${isActive ? "current" : ""}`}
+          to="/chat"
+        >
+          AI 일정
+        </NavLink>
+        <NavLink
+          className={({ isActive }) =>
+            `key nav-wide ${isActive ? "current" : ""}`
+          }
+          to="/schedules"
+        >
+          내 일정
+        </NavLink>
         <NavLink
           className={({ isActive }) => `key ${isActive ? "current" : ""}`}
           to="/likes"
