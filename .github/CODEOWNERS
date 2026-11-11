@@ -1,0 +1,31 @@
+# PR에 리뷰어를 자동으로 지정한다. 아래쪽 규칙이 위쪽보다 우선한다.
+# BE1 이소현 @leesh03 · BE2 김민경 @frlp6537-netizen
+# FE1 김건우 @mylittlesky · FE2 황규원 @ppp810517-oss · FE3 이혜정 @hyejjung02-wq
+
+# 기본: 백엔드 총괄
+*                                   @leesh03
+
+# 공용 문서 (API·DB 규격은 백엔드 둘 다)
+/docs/                              @leesh03
+/docs/api-spec.md                   @leesh03 @frlp6537-netizen
+/docs/db-schema.md                  @leesh03 @frlp6537-netizen
+/docs/agent-response-format.md      @leesh03 @ppp810517-oss
+
+# 백엔드: 기본은 BE1, 사용자 기능은 BE2도
+/backend/                           @leesh03
+/backend/app/core/security.py       @frlp6537-netizen @leesh03
+/backend/app/core/deps.py           @frlp6537-netizen @leesh03
+/backend/app/models/user.py         @frlp6537-netizen @leesh03
+/backend/app/models/like.py         @frlp6537-netizen @leesh03
+/backend/app/models/schedule.py     @frlp6537-netizen @leesh03
+/backend/app/models/post.py         @frlp6537-netizen @leesh03
+/backend/app/models/notification.py @frlp6537-netizen @leesh03
+
+# 프론트: 기본 틀은 FE3, 담당 화면별
+/frontend/                          @hyejjung02-wq
+/frontend/src/styles/               @mylittlesky
+/frontend/src/components/common/    @mylittlesky
+/frontend/src/components/festival/  @mylittlesky
+/frontend/src/components/chat/      @ppp810517-oss
+/frontend/src/components/schedule/  @ppp810517-oss
+/frontend/src/api/                  @hyejjung02-wq @mylittlesky @ppp810517-oss

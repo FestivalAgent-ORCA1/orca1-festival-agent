@@ -183,6 +183,7 @@
 ```
 
 - `warnings`: `validate_schedule` 검사 결과 중 일정은 만들 수 있지만 알려야 할 내용. 없으면 `[]`
+  - code: `FESTIVAL_TIME_UNKNOWN`, `OUTSIDE_PLAYTIME`, `LONG_TRAVEL`, `NO_MEAL`, `TRAVEL_ESTIMATED`, `PLACES_UNAVAILABLE`(주변 장소를 못 가져와 축제 위주로 만듦). 프론트는 `message`를 그대로 보여주면 됨
 
 ### User (내 정보)
 
@@ -280,7 +281,7 @@
 | `area_code` | `1,31` | 쉼표로 여러 개 |
 | `tags` | `music,food` | 하나라도 겹치면 포함 |
 | `status` | `ongoing` | `upcoming` / `ongoing` (기본: 둘 다, 종료 제외) |
-| `keyword` | `빛` | 축제명 검색 |
+| `keyword` | `빛` | 축제명·주소 검색 (공백 무시, 최대 50자) |
 | `sort` | `start_date` | `start_date`(기본) / `end_date` / `title` |
 | `page`, `size` | | 공통 규칙 |
 
@@ -338,7 +339,7 @@
 - `place_ids`: 사용자가 고른 주변 장소 (없으면 `[]`)
 - `auto_fill`: `true`면 부족한 식사·관광지를 자동으로 채움
 - 응답: Itinerary
-- 일정을 만들 수 없으면 400 + `code`: `VISIT_DATE_OUT_OF_RANGE`(축제 기간 아님), `TIME_TOO_SHORT`(시간 부족)
+- 일정을 만들 수 없으면 400 + `code`: `VISIT_DATE_OUT_OF_RANGE`(축제 기간 아님 또는 지난 날짜), `TIME_TOO_SHORT`(2시간 미만이거나 시간 안에 못 넣음). 없는 축제는 404 `FESTIVAL_NOT_FOUND`
 - 이동 시간 계산 때문에 수 초 걸릴 수 있음 → 로딩 표시
 
 ---

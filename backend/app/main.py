@@ -8,7 +8,8 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
-from app.api import festivals, meta
+import app.models  # noqa: F401  모든 모델을 먼저 불러와 테이블 관계(FK)를 확정
+from app.api import agent, auth, festivals, itinerary, likes, meta, notifications, places, posts, schedules, users
 from app.core.config import settings
 from app.core.errors import AppError, app_error_handler
 
@@ -66,7 +67,16 @@ async def internal_error_handler(request: Request, exc: Exception):
 # BE1
 app.include_router(meta.router)
 app.include_router(festivals.router)
-# BE2 (be2-MK 병합 후 추가): auth, users, likes, schedules, posts, notifications
+app.include_router(places.router)
+app.include_router(itinerary.router)
+app.include_router(agent.router)
+# BE2
+app.include_router(auth.router)
+app.include_router(users.router)
+app.include_router(likes.router)
+app.include_router(schedules.router)
+app.include_router(posts.router)
+app.include_router(notifications.router)
 
 
 @app.get("/health", tags=["health"])

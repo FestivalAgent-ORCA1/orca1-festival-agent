@@ -34,9 +34,10 @@ AI가 매번 Tool을 고르게 하면 단계를 건너뛰거나 호출 수가 �
 
 ## ① 의도 분류 (`agent/intent.py`)
 
-- Groq에 짧은 분류 지시문 + 사용자 메시지(+ 최근 대화 2~3개)를 보내 `intent` 하나를 JSON으로 받음
-- 빠른 처리를 위해 간단한 키워드 규칙을 먼저 적용 ("일정", "코스", "시간표" → itinerary)하고, 애매할 때만 AI 호출
-- `context.festival_content_id`나 `context.itinerary`가 있고 일정 관련 표현이면 itinerary
+- 키워드 규칙으로 일정 요청만 먼저 분리 ("일정", "코스", "시간표", "동선", "짜줘" → itinerary)
+- `context.itinerary`가 있고 수정 표현("추가", "빼", "까지" 등)이면 itinerary
+- 나머지(recommend / festival_info / smalltalk / unknown)는 따로 분류하지 않고 ② 반복 처리로 보내고,
+  AI가 최종 답변(`final_answer`)에 넣은 `intent`를 사용 (2026-11-11 변경: 분류용 AI 호출을 없애 Groq 사용량·응답 시간 절약)
 
 ## ② AI 반복 처리 (`agent/loop.py`)
 
@@ -54,7 +55,8 @@ for 회차 in 1..5:
 
 - 이 경로에서 AI가 쓸 수 있는 Tool: `search_festivals`, `get_festival_detail`, `score_festivals`
 - AI의 최종 답변은 **글만** 작성. 축제 카드 블록은 AI가 만든 JSON이 아니라, 이번 요청에서 Tool이 돌려준 축제 데이터로 **서버가 직접** 만듦 (AI가 축제 정보를 지어내지 않도록)
-- AI가 답변에 "추천한 축제 ID 목록"을 함께 돌려주게 하고(JSON 응답 형식), 그 ID만 카드로 만듦
+- AI는 최종 답변을 `final_answer` Tool로 보냄 (`intent`, `text`, `festival_ids`, `reasons`, `quick_replies`). 서버는 `festival_ids` 중 **이번 요청의 Tool 결과에 있던 축제만** 카드로 만듦
+  - "JSON으로 답해"라고 지시하면 gpt-oss 모델이 없는 `json` Tool을 불러 Groq가 400 오류를 내서 Tool 방식으로 바꿈 (2026-11-11)
 
 ### 추천 흐름 예시 — "이번 주말 서울 축제 추천해줘"
 
@@ -77,7 +79,8 @@ for 회차 in 1..5:
 5. build_timeline(..., travel_legs)    ← 실제 이동 시간으로 다시 배치
 6. validate_schedule(...)
    └ errors 있으면 장소를 하나 빼고 3번부터 다시 (최대 2회)
-7. AI가 시간표를 2~3문장으로 설명 → text + timeline + quick_replies
+7. 시간표 설명 2~3문장 → text + timeline + quick_replies
+   (2026-11-11: Groq 무료 플랜 분당 토큰 제한 때문에 설명은 AI 대신 템플릿으로 만듦. 일정 경로의 Groq 호출은 0번 단계 1번뿐)
 ```
 
 - **일정 수정** ("카페 추가해줘", "18시까지"): `context.itinerary`를 출발점으로, 바뀐 조건만 반영해서 3번부터 다시 실행

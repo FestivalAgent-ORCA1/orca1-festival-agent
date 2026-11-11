@@ -57,7 +57,8 @@
 {"ok": True, "festivals": [FestivalSummary, ...], "total": 34}
 ```
 
-- 1주차: TourAPI `searchFestival2` 직접 호출 → 3주차 동기화 작업 이후: **우리 DB `festivals` 조회**로 변경 (받는 값·돌려주는 값은 그대로)
+- 동기화 작업(`sync_festivals`)이 먼저 만들어져서 처음부터 **우리 DB `festivals` 조회**로 구현 (2026-11-11)
+- AI 채팅에서는 토큰을 아끼려고 최대 10개만 AI에게 보냄 (Groq 무료 플랜 분당 8,000토큰)
 - AI가 "이번 주말" 같은 표현을 날짜로 바꿀 수 있도록 AI 지시문에 오늘 날짜·요일을 넣어줌 (`prompts.py`)
 
 ## 2. `get_festival_detail` — 축제 1개 상세

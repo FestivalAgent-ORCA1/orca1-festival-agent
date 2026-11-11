@@ -10,13 +10,20 @@ os.environ.setdefault("SECRET_KEY", "test-secret")
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
-from sqlalchemy import create_engine  # noqa: E402
+from sqlalchemy import BigInteger, create_engine  # noqa: E402
+from sqlalchemy.ext.compiler import compiles  # noqa: E402
 from sqlalchemy.orm import sessionmaker  # noqa: E402
 from sqlalchemy.pool import StaticPool  # noqa: E402
 
 import app.models  # noqa: E402,F401
 from app.core.db import Base, get_db  # noqa: E402
 from app.main import app  # noqa: E402
+
+
+@compiles(BigInteger, "sqlite")
+def _bigint_as_integer(type_, compiler, **kw):
+    """SQLite는 INTEGER PK만 자동 증가하므로 테스트에서만 BIGINT → INTEGER (MySQL은 그대로)"""
+    return "INTEGER"
 
 
 @pytest.fixture
