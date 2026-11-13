@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { repository } from "../../api/repository.js";
 import Header from "./Header.jsx";
+import BottomNav from "./BottomNav.jsx";
 import Modal from "../common/Modal.jsx";
 export default function PageLayout() {
   const [dialog, setDialog] = useState(null);
@@ -38,6 +39,7 @@ export default function PageLayout() {
           <span className="copyright">© {new Date().getFullYear()} ORCA</span>
         </div>
       </footer>
+      <BottomNav />
       <Modal
         open={dialog === "about"}
         title="ORCA 소개"

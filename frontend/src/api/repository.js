@@ -2,7 +2,14 @@ import { createApiClient } from "./client.js";
 import { createFestivalApi } from "./festivals.js";
 import { createLikesApi } from "./likes.js";
 import { createPlacesApi } from "./places.js";
+import { createAuthApi } from "./auth.js";
+import { createUsersApi } from "./users.js";
 import { createDemoRepository } from "./demo.js";
+import { createDemoAuth } from "./demoAuth.js";
+import { createPostsApi } from "./posts.js";
+import { createDemoCommunity } from "./demoCommunity.js";
+import { createNotificationsApi } from "./notifications.js";
+import { createDemoNotifications } from "./demoNotifications.js";
 import { createAgentApi } from "./agent.js";
 import { createItineraryApi } from "./itinerary.js";
 import { createSchedulesApi } from "./schedules.js";
@@ -41,16 +48,32 @@ try {
 } catch {
   /* demo still works in memory */
 }
+function createMockRepository() {
+  const auth = createDemoAuth(storage, getAccessToken);
+  const viewer = () => auth.getMe().catch(() => null);
+  // spread 대신 Object.assign을 써야 demo의 storageWarning getter가 유지됩니다.
+  // FE3 예시 계정·커뮤니티·알림 · FE2 채팅·일정 예시를 함께 붙입니다.
+  return Object.assign(
+    createDemoRepository(storage),
+    auth,
+    createDemoCommunity(storage, viewer),
+    createDemoNotifications(storage, viewer),
+    createPlannerDemo(storage),
+  );
+}
 export const repository =
   mode === "mock"
-    ? // FE2 채팅·일정 예시. Object.assign으로 storageWarning getter를 유지합니다.
-      Object.assign(createDemoRepository(storage), createPlannerDemo(storage))
+    ? createMockRepository()
     : {
         mode,
         hasSession: () => Boolean(getAccessToken()),
         ...createFestivalApi(request),
         ...createLikesApi(request),
         ...createPlacesApi(request),
+        ...createAuthApi(request),
+        ...createUsersApi(request),
+        ...createPostsApi(request),
+        ...createNotificationsApi(request),
         ...createAgentApi(request),
         ...createItineraryApi(request),
         ...createSchedulesApi(request),
