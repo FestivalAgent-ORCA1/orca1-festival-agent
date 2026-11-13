@@ -1,11 +1,13 @@
 import { Link, NavLink } from "react-router-dom";
 import { useFavorites } from "../../contexts/FavoritesContext.jsx";
 import { useAuth } from "../../contexts/AuthContext.jsx";
+import { useNotifications } from "../../contexts/NotificationsContext.jsx";
 import Button from "../common/Button.jsx";
 import Icon from "../common/Icon.jsx";
 export default function Header({ onAbout }) {
   const { items, status } = useFavorites();
   const auth = useAuth();
+  const { unread } = useNotifications();
   return (
     <header className="site-header wrap">
       <Link className="brand" to="/" aria-label="ORCA 첫 화면">
@@ -74,6 +76,14 @@ export default function Header({ onAbout }) {
             to="/profile"
           >
             내 정보
+            {unread > 0 && (
+              <span
+                className="nav-count"
+                aria-label={`안 읽은 알림 ${unread}개`}
+              >
+                {unread}
+              </span>
+            )}
           </NavLink>
         ) : (
           <NavLink

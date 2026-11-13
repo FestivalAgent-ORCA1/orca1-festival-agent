@@ -181,3 +181,67 @@ textarea:focus-visible {
 .comment-form .key {
   justify-self: end;
 }
+
+/* 알림함 */
+.notification-list {
+  display: grid;
+  gap: 10px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.notification {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 20px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: transparent;
+  color: var(--muted);
+  text-align: left;
+}
+.notification.unread {
+  background: white;
+  color: var(--ink);
+  box-shadow: 0 3px 0 #e6e6dc;
+}
+.notification-type {
+  padding: 3px 10px;
+  border-radius: 100px;
+  background: #eeede6;
+  font-size: 10px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.notification.unread .notification-type {
+  background: var(--lime);
+}
+.notification-message {
+  font-size: 14px;
+  overflow-wrap: anywhere;
+}
+.notification-date {
+  font-size: 11px;
+  color: var(--muted);
+  white-space: nowrap;
+}
+@media (max-width: 620px) {
+  .notification {
+    grid-template-columns: auto 1fr;
+  }
+  .notification-date {
+    grid-column: 2;
+  }
+}
+.unread-dot {
+  position: absolute;
+  top: 10px;
+  right: calc(50% - 16px);
+  width: 8px;
+  height: 8px;
+  border-radius: 100%;
+  background: var(--orange);
+}

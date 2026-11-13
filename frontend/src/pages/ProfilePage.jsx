@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 import { useAuth } from "../contexts/AuthContext.jsx";
 import { useToast } from "../contexts/ToastContext.jsx";
+import { useNotifications } from "../contexts/NotificationsContext.jsx";
 import { regions, tagNames } from "../data/festivals.js";
 import { ageGroups } from "../data/preferences.js";
 import { postDate } from "../lib/postDate.js";
@@ -30,6 +31,7 @@ export default function ProfilePage() {
 
 function Profile() {
   const { user, updateNickname, logout, withdraw } = useAuth();
+  const { unread } = useNotifications();
   const navigate = useNavigate();
   const notify = useToast();
   return (
@@ -47,7 +49,9 @@ function Profile() {
           <nav className="profile-links" aria-label="내 정보 바로 가기">
             <Link to="/likes">나의 티켓 (찜한 축제)</Link>
             <Link to="/schedules">내 일정</Link>
-            <Link to="/notifications">알림함</Link>
+            <Link to="/notifications">
+              알림함{unread > 0 ? ` (안 읽음 ${unread})` : ""}
+            </Link>
             <Link to="/community">커뮤니티</Link>
           </nav>
         </section>

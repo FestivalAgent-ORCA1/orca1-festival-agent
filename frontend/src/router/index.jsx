@@ -15,6 +15,7 @@ import CommunityPage from "../pages/CommunityPage.jsx";
 import PostDetailPage from "../pages/PostDetailPage.jsx";
 import PostWritePage from "../pages/PostWritePage.jsx";
 import ProfilePage from "../pages/ProfilePage.jsx";
+import NotificationsPage from "../pages/NotificationsPage.jsx";
 
 export default function AppRoutes() {
   return (
@@ -37,8 +38,9 @@ export default function AppRoutes() {
         <Route path="community/write" element={<PostWritePage />} />
         <Route path="community/:id" element={<PostDetailPage />} />
         <Route path="community/:id/edit" element={<PostWritePage />} />
-        {/* FE3: 내 정보 */}
+        {/* FE3: 내 정보 · 알림함 */}
         <Route path="profile" element={<ProfilePage />} />
+        <Route path="notifications" element={<NotificationsPage />} />
         <Route path="*" element={<UnavailablePage />} />
       </Route>
     </Routes>

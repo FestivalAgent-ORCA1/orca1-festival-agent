@@ -8,6 +8,8 @@ import { createDemoRepository } from "./demo.js";
 import { createDemoAuth } from "./demoAuth.js";
 import { createPostsApi } from "./posts.js";
 import { createDemoCommunity } from "./demoCommunity.js";
+import { createNotificationsApi } from "./notifications.js";
+import { createDemoNotifications } from "./demoNotifications.js";
 import { createAgentApi } from "./agent.js";
 import { createItineraryApi } from "./itinerary.js";
 import { createSchedulesApi } from "./schedules.js";
@@ -48,12 +50,14 @@ try {
 }
 function createMockRepository() {
   const auth = createDemoAuth(storage, getAccessToken);
+  const viewer = () => auth.getMe().catch(() => null);
   // spread 대신 Object.assign을 써야 demo의 storageWarning getter가 유지됩니다.
-  // FE3 예시 계정·커뮤니티 · FE2 채팅·일정 예시를 함께 붙입니다.
+  // FE3 예시 계정·커뮤니티·알림 · FE2 채팅·일정 예시를 함께 붙입니다.
   return Object.assign(
     createDemoRepository(storage),
     auth,
-    createDemoCommunity(storage, () => auth.getMe().catch(() => null)),
+    createDemoCommunity(storage, viewer),
+    createDemoNotifications(storage, viewer),
     createPlannerDemo(storage),
   );
 }
@@ -69,6 +73,7 @@ export const repository =
         ...createAuthApi(request),
         ...createUsersApi(request),
         ...createPostsApi(request),
+        ...createNotificationsApi(request),
         ...createAgentApi(request),
         ...createItineraryApi(request),
         ...createSchedulesApi(request),
