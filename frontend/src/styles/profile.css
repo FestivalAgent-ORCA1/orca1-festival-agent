@@ -1,0 +1,81 @@
+/* FE3 내 정보 */
+.profile-page {
+  padding-bottom: 100px;
+}
+.profile-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+.profile-card {
+  display: grid;
+  align-content: start;
+  gap: 14px;
+  padding: 24px;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-card);
+}
+.profile-card h2 {
+  margin: 0;
+  font-size: 15px;
+}
+.profile-card-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.profile-links {
+  display: grid;
+}
+.profile-links a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  min-height: 44px;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+}
+.profile-links a:last-child {
+  border-bottom: 0;
+}
+.profile-links a::after {
+  content: "→";
+  color: var(--muted);
+}
+.profile-inline {
+  display: flex;
+  gap: 8px;
+}
+.profile-inline input {
+  flex: 1;
+  min-width: 0;
+  height: 46px;
+  padding: 0 18px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: white;
+}
+.profile-prefs {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 10px 16px;
+  margin: 0;
+  font-size: 13px;
+}
+.profile-prefs dt {
+  color: var(--muted);
+}
+.profile-prefs dd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin: 0;
+}
+@media (max-width: 760px) {
+  .profile-grid {
+    grid-template-columns: 1fr;
+  }
+}

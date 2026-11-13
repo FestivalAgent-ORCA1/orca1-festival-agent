@@ -6,6 +6,8 @@ import "./styles/weekend.css";
 import "./styles/app.css";
 import "./styles/auth.css";
 import "./styles/layout.css";
+import "./styles/community.css";
+import "./styles/profile.css";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>

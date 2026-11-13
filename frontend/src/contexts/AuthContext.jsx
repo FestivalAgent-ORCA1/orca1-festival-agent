@@ -86,10 +86,8 @@ export function AuthProvider({ children }) {
     setUser(next);
     return next;
   }, []);
-  const withdraw = useCallback(async () => {
-    await repository.deleteMe();
-    logout();
-  }, [logout]);
+  // 탈퇴한 뒤 화면을 먼저 옮길 수 있도록 로그아웃은 부르는 쪽에서 합니다.
+  const withdraw = useCallback(() => repository.deleteMe(), []);
   // guest: 비로그인 / loading: 내 정보 확인 중 / authenticated: 로그인 / error: 내 정보를 못 불러옴
   const status = !token
     ? "guest"

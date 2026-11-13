@@ -68,7 +68,9 @@ function PreferencesForm() {
     <section className="wrap auth-page">
       <div className="auth-card wide">
         <div className="page-intro">
-          <span className="eyebrow">FIRST SETTINGS</span>
+          <span className="eyebrow">
+            {user.onboarded ? "MY TASTE" : "FIRST SETTINGS"}
+          </span>
           <h1 className="display">{user.nickname}님의 주말 취향.</h1>
           <p>
             고른 내용으로 축제를 추천해 드려요. 내 정보에서 언제든 바꿀 수
@@ -140,7 +142,11 @@ function PreferencesForm() {
             </p>
           )}
           <Button variant="blue" type="submit" disabled={submitting}>
-            {submitting ? "저장하는 중…" : "이대로 시작하기"}
+            {submitting
+              ? "저장하는 중…"
+              : user.onboarded
+                ? "저장하기"
+                : "이대로 시작하기"}
           </Button>
         </form>
       </div>
