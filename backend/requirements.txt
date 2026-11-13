@@ -1,0 +1,24 @@
+# 서버 (Python 3.11). 버전을 바꾸면 팀에 공지하고 Render도 다시 배포
+fastapi==0.162.2
+uvicorn[standard]==0.54.0
+pydantic==2.14.3
+pydantic-settings==2.16.2
+email-validator==2.3.0
+
+# DB (MySQL 8 / Aiven)
+SQLAlchemy==2.1.8
+PyMySQL==1.2.4
+cryptography==50.0.2
+alembic==1.20.1
+
+# 로그인 (BE2)
+bcrypt==5.0.0
+PyJWT==2.15.1
+
+# 외부 API·AI
+httpx==0.28.1
+groq==1.7.0
+
+# 자동 실행 작업
+APScheduler==3.11.3
+tzdata==2026.6
