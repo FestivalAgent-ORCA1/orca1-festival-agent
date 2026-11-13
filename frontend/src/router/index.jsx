@@ -8,6 +8,9 @@ import UnavailablePage from "../pages/UnavailablePage.jsx";
 import LoginPage from "../pages/LoginPage.jsx";
 import SignupPage from "../pages/SignupPage.jsx";
 import OnboardingPage from "../pages/OnboardingPage.jsx";
+import ChatPage from "../pages/ChatPage.jsx";
+import MySchedulesPage from "../pages/MySchedulesPage.jsx";
+import ScheduleDetailPage from "../pages/ScheduleDetailPage.jsx";
 
 export default function AppRoutes() {
   return (
@@ -17,6 +20,11 @@ export default function AppRoutes() {
         <Route path="festivals" element={<FestivalListPage />} />
         <Route path="festivals/:contentId" element={<FestivalDetailPage />} />
         <Route path="likes" element={<LikesPage />} />
+        {/* FE2: AI 채팅 · 내 일정 */}
+        <Route path="chat" element={<ChatPage />} />
+        <Route path="schedules" element={<MySchedulesPage />} />
+        <Route path="schedules/:id" element={<ScheduleDetailPage />} />
+        {/* FE3: 로그인 · 가입 · 첫 설정 */}
         <Route path="login" element={<LoginPage />} />
         <Route path="signup" element={<SignupPage />} />
         <Route path="onboarding" element={<OnboardingPage />} />

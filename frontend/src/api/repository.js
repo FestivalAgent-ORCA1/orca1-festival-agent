@@ -6,6 +6,10 @@ import { createAuthApi } from "./auth.js";
 import { createUsersApi } from "./users.js";
 import { createDemoRepository } from "./demo.js";
 import { createDemoAuth } from "./demoAuth.js";
+import { createAgentApi } from "./agent.js";
+import { createItineraryApi } from "./itinerary.js";
+import { createSchedulesApi } from "./schedules.js";
+import { createPlannerDemo } from "./plannerDemo.js";
 
 // FE3 AuthContext 연결점: access_token 저장 후 orca:auth-changed 이벤트를 보냅니다.
 export function getAccessToken() {
@@ -43,9 +47,11 @@ try {
 export const repository =
   mode === "mock"
     ? // spread 대신 Object.assign을 써야 demo의 storageWarning getter가 유지됩니다.
+      // FE3 예시 계정 · FE2 채팅·일정 예시를 함께 붙입니다.
       Object.assign(
         createDemoRepository(storage),
         createDemoAuth(storage, getAccessToken),
+        createPlannerDemo(storage),
       )
     : {
         mode,
@@ -55,4 +61,7 @@ export const repository =
         ...createPlacesApi(request),
         ...createAuthApi(request),
         ...createUsersApi(request),
+        ...createAgentApi(request),
+        ...createItineraryApi(request),
+        ...createSchedulesApi(request),
       };
