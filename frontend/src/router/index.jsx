@@ -11,6 +11,11 @@ import OnboardingPage from "../pages/OnboardingPage.jsx";
 import ChatPage from "../pages/ChatPage.jsx";
 import MySchedulesPage from "../pages/MySchedulesPage.jsx";
 import ScheduleDetailPage from "../pages/ScheduleDetailPage.jsx";
+import CommunityPage from "../pages/CommunityPage.jsx";
+import PostDetailPage from "../pages/PostDetailPage.jsx";
+import PostWritePage from "../pages/PostWritePage.jsx";
+import ProfilePage from "../pages/ProfilePage.jsx";
+import NotificationsPage from "../pages/NotificationsPage.jsx";
 
 export default function AppRoutes() {
   return (
@@ -28,6 +33,14 @@ export default function AppRoutes() {
         <Route path="login" element={<LoginPage />} />
         <Route path="signup" element={<SignupPage />} />
         <Route path="onboarding" element={<OnboardingPage />} />
+        {/* FE3: 커뮤니티 */}
+        <Route path="community" element={<CommunityPage />} />
+        <Route path="community/write" element={<PostWritePage />} />
+        <Route path="community/:id" element={<PostDetailPage />} />
+        <Route path="community/:id/edit" element={<PostWritePage />} />
+        {/* FE3: 내 정보 · 알림함 */}
+        <Route path="profile" element={<ProfilePage />} />
+        <Route path="notifications" element={<NotificationsPage />} />
         <Route path="*" element={<UnavailablePage />} />
       </Route>
     </Routes>
