@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { repository } from "../api/repository.js";
+import { getAccessToken, repository } from "../api/repository.js";
+import { useAuth } from "../contexts/AuthContext.jsx";
 import { useToast } from "../contexts/ToastContext.jsx";
 import { buildHistory, lastItinerary } from "../lib/chat.js";
 import { defaultScheduleTitle, toSchedulePayload } from "../lib/itinerary.js";
@@ -57,8 +58,10 @@ export default function ChatPage() {
   const festivalId = params.get("festival");
   const navigate = useNavigate();
   const notify = useToast();
+  // 예시 모드에서도 FE3 로그인 상태(access_token)를 따릅니다.
+  const loggedIn = useAuth().status !== "guest";
   const [messages, setMessages] = useState(() => {
-    const restored = repository.hasSession() ? readPendingItinerary() : null;
+    const restored = getAccessToken() ? readPendingItinerary() : null;
     return restored
       ? [
           greeting(festivalId),
@@ -81,7 +84,7 @@ export default function ChatPage() {
 
   useEffect(() => {
     document.title = "AI 일정 플래너 — ORCA";
-    if (repository.hasSession())
+    if (getAccessToken())
       try {
         sessionStorage.removeItem(PENDING_KEY);
       } catch {
@@ -150,7 +153,7 @@ export default function ChatPage() {
   };
 
   const askSave = (messageId, index, itinerary) => {
-    if (!repository.hasSession()) {
+    if (!loggedIn) {
       try {
         sessionStorage.setItem(PENDING_KEY, JSON.stringify(itinerary));
       } catch {
