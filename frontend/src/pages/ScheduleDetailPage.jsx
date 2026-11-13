@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { repository } from "../api/repository.js";
 import { useResource } from "../hooks/useResource.js";
+import { useAuth } from "../contexts/AuthContext.jsx";
 import { useToast } from "../contexts/ToastContext.jsx";
 import { itineraryOf, toSchedulePayload } from "../lib/itinerary.js";
 import Button from "../components/common/Button.jsx";
@@ -17,7 +18,7 @@ export default function ScheduleDetailPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const notify = useToast();
-  const loggedIn = repository.hasSession();
+  const loggedIn = useAuth().status !== "guest";
   const resource = useResource(
     useCallback((signal) => repository.getSchedule(id, signal), [id]),
     loggedIn,
