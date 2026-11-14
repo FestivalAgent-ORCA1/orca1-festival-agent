@@ -1,6 +1,26 @@
 # 프론트 배포 (Vercel)
 
-> 담당: FE3 · 상태: **초안** (백엔드 Render 주소가 정해지면 갱신)
+> 담당: FE3 · 상태: **배포 전** (2026-11-14 기준)
+
+## 현재 상태
+
+> ⚠️ **아직 Vercel에 배포하지 않았습니다.** 지금 있는 것은 배포 **설정 파일**(`frontend/vercel.json`)과 이 안내 문서뿐이고, 배포 주소는 아직 없습니다.
+
+| 단계 | 담당 | 상태 |
+| --- | --- | --- |
+| 배포 설정 파일 (`frontend/vercel.json`) | FE3 | ✅ 완료 (PR #7) |
+| 백엔드 Render 배포 → 주소 공유 | BE1 | ⏳ 대기 |
+| Vercel 프로젝트를 만들 계정 정하기, 조직 저장소 접근 승인 | 팀 | ⏳ 결정 필요 |
+| Vercel 프로젝트 연결 + 환경 변수 입력 | FE3 | ⏳ 위 두 단계 후 |
+| 백엔드 `CORS_ORIGINS`에 Vercel 주소 추가 | BE1 | ⏳ Vercel 주소가 나온 후 |
+| 카카오 JavaScript SDK 도메인 등록 | FE2 | ⏳ Vercel 주소가 나온 후 |
+
+배포하면 이 표와 아래 "배포 주소"를 갱신합니다.
+
+### 배포 주소
+
+- Production (`main`): 아직 없음
+- develop 미리 보기: 아직 없음
 
 ## 구조
 
@@ -29,7 +49,8 @@
 
 ## 배포 후 다른 담당에게 알릴 것
 
-- **BE1/BE2**: 백엔드 CORS 허용 목록에 Vercel 주소(Production + develop 미리 보기)를 추가해 주세요. `localhost`와 `127.0.0.1`처럼 주소가 조금만 달라도 다른 출처입니다.
+- **BE1**: Render 환경 변수 `CORS_ORIGINS`(쉼표로 여러 개, `backend/app/core/config.py`)에 Vercel 주소(Production + develop 미리 보기)를 추가해 주세요. 끝에 `/`는 붙이지 않습니다.
+  - 로컬 확인용: 프론트 개발 서버는 `http://127.0.0.1:5173`으로 뜹니다(`package.json`의 `vite --host 127.0.0.1`). 백엔드 기본값은 `http://localhost:5173`뿐이라, 로컬에서 api 모드로 붙일 때는 `CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173`이 필요합니다. `localhost`와 `127.0.0.1`은 서로 다른 출처입니다.
 - **FE2**: 카카오 개발자 콘솔의 JavaScript SDK 도메인에 Vercel 주소를 등록해 주세요.
 
 ## 새로고침 404 방지
