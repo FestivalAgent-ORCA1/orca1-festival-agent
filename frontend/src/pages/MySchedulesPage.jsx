@@ -2,6 +2,7 @@ import { useCallback, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { repository } from "../api/repository.js";
 import { useResource } from "../hooks/useResource.js";
+import { useAuth } from "../contexts/AuthContext.jsx";
 import { visitDateLabel } from "../lib/itinerary.js";
 import Button from "../components/common/Button.jsx";
 import EmptyState from "../components/common/EmptyState.jsx";
@@ -11,7 +12,7 @@ import FestivalImage from "../components/festival/FestivalImage.jsx";
 import "../styles/planner.css";
 
 export default function MySchedulesPage() {
-  const loggedIn = repository.hasSession();
+  const loggedIn = useAuth().status !== "guest";
   const resource = useResource(
     useCallback((signal) => repository.getSchedules(signal), []),
     loggedIn,
