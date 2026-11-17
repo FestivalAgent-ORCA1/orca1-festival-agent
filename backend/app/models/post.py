@@ -1,11 +1,13 @@
 from sqlalchemy import BigInteger, Column, DateTime, ForeignKey, Integer, String, Text, func
 
 from app.core.db import Base
+from app.models.base import TABLE_ARGS
 
 
 class Post(Base):
     """posts — 게시글"""
     __tablename__ = "posts"
+    __table_args__ = (TABLE_ARGS,)
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     user_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
@@ -20,6 +22,7 @@ class Post(Base):
 class Comment(Base):
     """comments — 댓글"""
     __tablename__ = "comments"
+    __table_args__ = (TABLE_ARGS,)
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     post_id = Column(BigInteger, ForeignKey("posts.id", ondelete="CASCADE"), nullable=False)
