@@ -3,6 +3,7 @@ from datetime import timedelta, timezone
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
+from app.core.constants import AGE_GROUP_CODES, REGION_CODES, TAG_CODES  # BE1: tags.md 코드 목록
 from app.core.errors import AppError
 from app.core.security import hash_password, verify_password
 from app.models.user import User, UserRegion, UserTag
@@ -54,7 +55,17 @@ def update_nickname(db: Session, user: User, nickname: str) -> User:
 
 def set_preferences(db: Session, user: User, age_group: str, regions: list[str], tags: list[str]) -> User:
     """첫 설정·관심사 수정 — 전체 교체 방식 (api-spec PUT)"""
-    # TODO: tags.md 코드 목록에 없는 값이면 400 — BE1의 메타 상수가 생기면 검증 추가
+    # 목록에 없는 코드면 400 (api-spec 2번)
+    if age_group not in AGE_GROUP_CODES:
+        raise AppError(400, "BAD_REQUEST", "연령대 값이 올바르지 않아요.")
+    if any(code not in REGION_CODES for code in regions):
+        raise AppError(400, "BAD_REQUEST", "지역 코드가 올바르지 않아요.")
+    if any(code not in TAG_CODES for code in tags):
+        raise AppError(400, "BAD_REQUEST", "관심사 코드가 올바르지 않아요.")
+    # 같은 코드가 두 번 오면 하나로 (중복 저장 시 DB 오류 방지, 순서는 유지)
+    regions = list(dict.fromkeys(regions))
+    tags = list(dict.fromkeys(tags))
+
     db.query(UserRegion).filter(UserRegion.user_id == user.id).delete()
     db.query(UserTag).filter(UserTag.user_id == user.id).delete()
     for code in regions:
