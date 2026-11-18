@@ -4,11 +4,13 @@ from sqlalchemy import (
 )
 
 from app.core.db import Base
+from app.models.base import TABLE_ARGS
 
 
 class Schedule(Base):
     """schedules — 저장한 일정"""
     __tablename__ = "schedules"
+    __table_args__ = (TABLE_ARGS,)
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
     user_id = Column(BigInteger, ForeignKey("users.id", ondelete="CASCADE"), nullable=False)
@@ -27,6 +29,7 @@ class ScheduleItem(Base):
     __tablename__ = "schedule_items"
     __table_args__ = (
         UniqueConstraint("schedule_id", "seq", name="uq_schedule_items_schedule_seq"),
+        TABLE_ARGS,
     )
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
