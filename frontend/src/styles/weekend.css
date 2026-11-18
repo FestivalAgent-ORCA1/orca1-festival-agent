@@ -1,29 +1,29 @@
 @font-face {
   font-family: Bagel;
-  src: url("/assets/BagelFatOne.ttf") format("truetype");
+  src: url("/assets/BagelFatOne-Regular.woff2") format("woff2");
   font-display: swap;
 }
 @font-face {
   font-family: Plex;
-  src: url("/assets/Plex-400.ttf") format("truetype");
+  src: url("/assets/IBMPlexSansKR-Regular.woff2") format("woff2");
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
   font-family: Plex;
-  src: url("/assets/Plex-500.ttf") format("truetype");
+  src: url("/assets/IBMPlexSansKR-Medium.woff2") format("woff2");
   font-weight: 500;
   font-display: swap;
 }
 @font-face {
   font-family: Plex;
-  src: url("/assets/Plex-600.ttf") format("truetype");
+  src: url("/assets/IBMPlexSansKR-SemiBold.woff2") format("woff2");
   font-weight: 600;
   font-display: swap;
 }
 @font-face {
   font-family: Plex;
-  src: url("/assets/Plex-700.ttf") format("truetype");
+  src: url("/assets/IBMPlexSansKR-Bold.woff2") format("woff2");
   font-weight: 700;
   font-display: swap;
 }
@@ -105,10 +105,15 @@ select:focus-visible {
   margin-inline: auto;
 }
 .display {
-  font-family: Bagel, Plex, sans-serif;
+  font-family: var(--font-display);
   font-weight: 400;
   letter-spacing: -0.025em;
   line-height: 1.16;
+}
+/* 닉네임에 베이글체에 없는 한글이 있어도 제목 전체에 같은 글꼴을 적용합니다. */
+.display-with-nickname {
+  font-family: var(--font-body);
+  font-weight: 700;
 }
 .eyebrow {
   font-size: 11px;

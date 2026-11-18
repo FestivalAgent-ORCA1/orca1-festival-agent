@@ -38,7 +38,9 @@ function Profile() {
     <section className="wrap profile-page">
       <div className="page-intro">
         <span className="eyebrow">MY WEEKEND CLUB</span>
-        <h1 className="display">{user.nickname}님, 반가워요.</h1>
+        <h1 className="display display-with-nickname">
+          {user.nickname}님, 반가워요.
+        </h1>
         <p>
           {user.email} · {postDate(user.created_at)} 가입
         </p>
