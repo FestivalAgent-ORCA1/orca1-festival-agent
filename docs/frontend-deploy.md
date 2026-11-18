@@ -1,12 +1,33 @@
 # 프론트 배포 (Vercel)
 
-> 담당: FE3 · 상태: **초안** (백엔드 Render 주소가 정해지면 갱신)
+> 담당: FE3 · 상태: **배포됨 · 예시(mock) 모드** (2026-11-18 기준)
+
+## 배포 주소
+
+**https://orca1-festival-agent-frontend.vercel.app**
+
+- 지금은 **`develop` 브랜치**를 배포하고, 백엔드 없이 **예시(mock) 모드**로 뜹니다 (화면 위 "미리 보기" 띠, 예시 축제 3곳·예시 계정·글·알림).
+- `develop`에 머지될 때마다 자동으로 다시 배포됩니다.
+
+## 현재 상태
+
+| 단계 | 담당 | 상태 |
+| --- | --- | --- |
+| 배포 설정 파일 (`frontend/vercel.json`) | FE3 | ✅ 완료 (PR #7) |
+| Vercel GitHub 앱 조직 설치 | BE1 | ✅ 완료 (orca1-festival-agent 저장소) |
+| Vercel 프로젝트 연결 (FE3 개인 Hobby 계정) | FE3 | ✅ 완료 |
+| 예시 모드 배포 | FE3 | ✅ 완료 |
+| 백엔드 Render 배포 → 주소 공유 | BE1 | ⏳ 대기 |
+| Vercel 환경 변수(`VITE_DATA_MODE=api`, `VITE_API_BASE_URL`) 입력 → 다시 배포 | FE3 | ⏳ Render 주소가 나온 후 |
+| 백엔드 `CORS_ORIGINS`에 위 배포 주소 추가 | BE1 | ⏳ |
+| 카카오 JavaScript SDK 도메인에 위 배포 주소 등록 | FE2 | ⏳ |
 
 ## 구조
 
-- Vercel 프로젝트 하나가 이 저장소의 `frontend/` 폴더를 배포합니다.
-- **Production 브랜치는 `main`** 입니다. 구축 기획서대로 `main`은 BE1이 develop을 확인한 뒤 올립니다.
-- Vercel은 다른 브랜치에 push할 때마다 **미리 보기(Preview) 주소**를 따로 만듭니다. 팀 확인은 `develop`의 미리 보기 주소로 합니다.
+- Vercel 프로젝트 `orca1-festival-agent-frontend` 하나가 이 저장소의 `frontend/` 폴더를 배포합니다. FE3(이혜정)의 개인 Hobby 계정에 있습니다.
+- **Production 브랜치는 임시로 `develop`** 입니다. 구축 기획서상 배포 브랜치는 `main`이지만 아직 `main`에 프론트 코드가 없어서 바꿔 두었습니다. 6주차에 BE1이 develop을 `main`에 올리면 Vercel **Settings → Environments → Production → Branch Tracking**을 `main`으로 되돌립니다.
+- 다른 브랜치에 push하면 Vercel이 **미리 보기(Preview) 주소**를 따로 만듭니다 (Deployments 탭). 다른 팀원이 push한 커밋도 자동 배포되는 것을 확인했습니다.
+- 조직의 **public** 저장소라 Hobby(무료) 플랜으로 배포할 수 있습니다. 저장소를 private으로 바꾸면 Hobby로는 배포할 수 없으니 주의해 주세요 ([Vercel 문서](https://vercel.com/docs/git)).
 
 ## Vercel 프로젝트 설정 (처음 한 번)
 
@@ -29,7 +50,8 @@
 
 ## 배포 후 다른 담당에게 알릴 것
 
-- **BE1/BE2**: 백엔드 CORS 허용 목록에 Vercel 주소(Production + develop 미리 보기)를 추가해 주세요. `localhost`와 `127.0.0.1`처럼 주소가 조금만 달라도 다른 출처입니다.
+- **BE1**: Render 환경 변수 `CORS_ORIGINS`(쉼표로 여러 개, `backend/app/core/config.py`)에 Vercel 주소(Production + develop 미리 보기)를 추가해 주세요. 끝에 `/`는 붙이지 않습니다.
+  - 로컬 확인용: 프론트 개발 서버는 `http://127.0.0.1:5173`으로 뜹니다(`package.json`의 `vite --host 127.0.0.1`). 백엔드 기본값은 `http://localhost:5173`뿐이라, 로컬에서 api 모드로 붙일 때는 `CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173`이 필요합니다. `localhost`와 `127.0.0.1`은 서로 다른 출처입니다.
 - **FE2**: 카카오 개발자 콘솔의 JavaScript SDK 도메인에 Vercel 주소를 등록해 주세요.
 
 ## 새로고침 404 방지
