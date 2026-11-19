@@ -10,7 +10,7 @@ name: 축제 주간 갱신
 
 on:
   schedule:
-    - cron: "0 19 * * 0" # UTC 일요일 19:00 = 한국 월요일 04:00 (GitHub 사정으로 늦게 시작될 수 있음)
+    - cron: "7 19 * * 0" # UTC 일요일 19:07 = 한국 월요일 04:07 (정각은 GitHub 예약이 몰려 늦어지거나 빠질 수 있어 7분)
   workflow_dispatch: # Actions 화면의 'Run workflow' 버튼으로 직접 실행
 
 concurrency:

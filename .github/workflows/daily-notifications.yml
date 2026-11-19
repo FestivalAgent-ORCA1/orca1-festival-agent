@@ -1,0 +1,71 @@
+# 매일 찜 알림 만들기 (담당 BE2 코드, 워크플로는 BE1. docs/workflow.md '찜 알림')
+#
+# - 무료 Render 서버는 잠들어서 서버 안의 APScheduler가 멈춤 → GitHub 임시 컴퓨터에서 실행
+# - 알림은 "그 날짜와 정확히 같을 때"만 만들어서, 하루 실행을 놓치면 그날 알림이 다시 생기지 않음
+#   → 하루 두 번 실행. 두 번째는 이미 만든 알림을 건너뛰므로 중복 없음 (_exists + DB UNIQUE)
+# - 정각이 아니라 7분: GitHub은 매시 정각에 예약 실행이 몰려 늦어지거나 빠질 수 있다고 안내함
+# - 필요한 Secrets: DATABASE_URL, AIVEN_CA_PEM (TourAPI·Groq 키는 쓰지 않음)
+# - 예약 실행은 기본 브랜치(develop)에 있는 이 파일 기준으로 동작함
+
+name: 찜 알림 매일 만들기
+
+on:
+  schedule:
+    - cron: "7 0,3 * * *" # UTC 00:07, 03:07 = 한국 매일 09:07, 12:07 (GitHub 사정으로 늦게 시작될 수 있음)
+  workflow_dispatch: # Actions 화면의 'Run workflow' 버튼으로 직접 실행
+
+concurrency:
+  group: daily-notifications # 앞 실행이 끝나기 전에 또 시작하지 않게
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash # -eo pipefail: 배치가 실패하면 tee를 거쳐도 단계가 실패로 표시됨
+        working-directory: backend
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      SECRET_KEY: batch-not-used # 설정에 꼭 있어야 해서 넣는 값. 배치는 로그인 토큰을 만들지 않음
+      TZ: Asia/Seoul
+
+    steps:
+      - name: develop 코드 받기
+        uses: actions/checkout@v5
+        with:
+          ref: develop
+
+      - name: Python 3.11 준비
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: 패키지 설치
+        run: pip install -r requirements.txt
+
+      - name: Secrets 확인, Aiven 인증서 파일 만들기
+        env:
+          AIVEN_CA_PEM: ${{ secrets.AIVEN_CA_PEM }}
+        run: |
+          missing=0
+          for name in DATABASE_URL AIVEN_CA_PEM; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Secret '$name'이 비어 있어요 (Settings → Secrets and variables → Actions)"
+              missing=1
+            fi
+          done
+          [ "$missing" -eq 0 ]
+          printf '%s\n' "$AIVEN_CA_PEM" > "$RUNNER_TEMP/ca.pem"
+          echo "DB_SSL_CA=$RUNNER_TEMP/ca.pem" >> "$GITHUB_ENV"
+
+      - name: 찜 알림 만들기 (send_notifications)
+        run: |
+          echo "### send_notifications" >> "$GITHUB_STEP_SUMMARY"
+          python -m app.batch.send_notifications | tee -a "$GITHUB_STEP_SUMMARY"
