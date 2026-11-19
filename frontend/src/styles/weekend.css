@@ -718,14 +718,15 @@ h2 {
     box-shadow 0.3s var(--round);
   box-shadow: 0 7px 0 #e7e9dd;
 }
-.festival-ticket:nth-child(1) {
+/* 티켓을 펼쳐 둔 장식: 순위와 관계없이 모든 줄에 같은 패턴을 반복합니다. */
+.festival-ticket:nth-child(3n + 1) {
   --tilt: -1.7deg;
 }
-.festival-ticket:nth-child(2) {
+.festival-ticket:nth-child(3n + 2) {
   --tilt: 1deg;
   margin-top: 24px;
 }
-.festival-ticket:nth-child(3) {
+.festival-ticket:nth-child(3n) {
   --tilt: -1deg;
 }
 .festival-ticket:hover {
@@ -1851,12 +1852,12 @@ dialog[open] {
     max-width: 405px;
     margin-inline: auto;
   }
-  .festival-ticket {
-    --tilt: -1deg !important;
-  }
-  .festival-ticket:nth-child(2) {
+  .festival-ticket:nth-child(n) {
+    --tilt: -1deg;
     margin-top: 0;
-    --tilt: 1deg !important;
+  }
+  .festival-ticket:nth-child(2n) {
+    --tilt: 1deg;
   }
   .ticket-photo {
     height: 225px;
