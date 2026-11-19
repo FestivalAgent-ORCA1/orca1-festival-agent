@@ -2,9 +2,11 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
 from app.core.errors import AppError
+from app.models.festival import Festival
 from app.models.post import Comment, Post
 from app.models.user import User
 from app.schemas.post import AuthorResponse, CommentResponse, PostResponse
+from app.services import festival_service  # BE1: 축제 조회
 
 
 def _author_of(db: Session, user_id: int) -> AuthorResponse:
@@ -13,13 +15,29 @@ def _author_of(db: Session, user_id: int) -> AuthorResponse:
     return AuthorResponse(id=user_id, nickname=nickname)
 
 
+def _festival_of(db: Session, content_id: str | None) -> dict | None:
+    """관련 축제 {content_id, title}. 관련 축제가 없으면 null (api-spec 10번)"""
+    if not content_id:
+        return None
+    festival = db.get(Festival, content_id)
+    if festival is None:
+        return None
+    return {"content_id": festival.content_id, "title": festival.title}
+
+
+def _check_festival(db: Session, content_id: str | None) -> None:
+    """글에 축제를 연결할 때, 없는 축제면 404"""
+    if content_id:
+        festival_service.get_festival_or_404(db, content_id)
+
+
 def to_post_response(db: Session, post: Post, viewer: User | None, preview: bool = False) -> PostResponse:
     comment_count = db.scalar(select(func.count()).select_from(Comment).where(Comment.post_id == post.id))
     content = post.content[:100] if preview else post.content   # 목록에서는 앞 100자만 (api-spec)
     return PostResponse(
         id=post.id, title=post.title, content=content,
         author=_author_of(db, post.user_id),
-        festival=None,   # TODO(BE1 연동): festival_content_id로 {content_id, title} 채우기
+        festival=_festival_of(db, post.festival_content_id),
         view_count=post.view_count, comment_count=comment_count,
         is_mine=(viewer is not None and viewer.id == post.user_id),
         created_at=post.created_at, updated_at=post.updated_at,
@@ -33,13 +51,14 @@ def list_posts(db: Session, viewer: User | None, page: int, size: int,
         query = query.where(Post.festival_content_id == festival_content_id)
     total = db.scalar(select(func.count()).select_from(query.subquery()))
     posts = db.scalars(
-        query.order_by(Post.created_at.desc()).offset((page - 1) * size).limit(size)
+        query.order_by(Post.created_at.desc(), Post.id.desc()).offset((page - 1) * size).limit(size)
     ).all()
     return [to_post_response(db, p, viewer, preview=True) for p in posts], total
 
 
 def create_post(db: Session, user: User, title: str, content: str,
                 festival_content_id: str | None) -> Post:
+    _check_festival(db, festival_content_id)
     post = Post(user_id=user.id, title=title, content=content,
                 festival_content_id=festival_content_id, view_count=0)
     db.add(post)
@@ -64,6 +83,7 @@ def update_post(db: Session, user: User, post_id: int, title: str, content: str,
     post = get_post(db, post_id, count_view=False)
     if post.user_id != user.id:
         raise AppError(403, "FORBIDDEN", "본인이 쓴 글만 수정할 수 있어요.")
+    _check_festival(db, festival_content_id)
     post.title = title
     post.content = content
     post.festival_content_id = festival_content_id
@@ -76,14 +96,15 @@ def delete_post(db: Session, user: User, post_id: int) -> None:
     post = get_post(db, post_id, count_view=False)
     if post.user_id != user.id:
         raise AppError(403, "FORBIDDEN", "본인이 쓴 글만 삭제할 수 있어요.")
-    db.delete(post)   # 댓글은 ON DELETE CASCADE로 함께 삭제
+    db.query(Comment).filter(Comment.post_id == post.id).delete()  # CASCADE와 같은 효과를 코드로도 보장
+    db.delete(post)
     db.commit()
 
 
 def list_comments(db: Session, viewer: User | None, post_id: int) -> list[CommentResponse]:
     get_post(db, post_id, count_view=False)   # 글이 없으면 404
     comments = db.scalars(
-        select(Comment).where(Comment.post_id == post_id).order_by(Comment.created_at.asc())  # 오래된 순
+        select(Comment).where(Comment.post_id == post_id).order_by(Comment.created_at.asc(), Comment.id.asc())  # 오래된 순
     ).all()
     return [
         CommentResponse(

@@ -1,6 +1,7 @@
 from sqlalchemy import Boolean, BigInteger, Column, DateTime, ForeignKey, String, UniqueConstraint, func
 
 from app.core.db import Base
+from app.models.base import TABLE_ARGS
 
 
 class Notification(Base):
@@ -9,6 +10,7 @@ class Notification(Base):
     __table_args__ = (
         # 배치가 두 번 돌아도 같은 알림이 중복 생성되지 않게
         UniqueConstraint("user_id", "type", "festival_content_id", name="uq_notifications_user_type_festival"),
+        TABLE_ARGS,
     )
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
