@@ -8,6 +8,12 @@ class AuthorResponse(BaseModel):
     nickname: str
 
 
+class FestivalRef(BaseModel):
+    """글에 연결된 축제 — 제목만 보여주면 돼서 짧은 모양 (api-spec 10번)"""
+    content_id: str
+    title: str
+
+
 class PostCreateRequest(BaseModel):
     title: str = Field(min_length=1, max_length=100)
     content: str = Field(min_length=1)
@@ -20,7 +26,7 @@ class PostResponse(BaseModel):
     title: str
     content: str                              # 목록에서는 앞 100자만 (service에서 자름)
     author: AuthorResponse
-    festival: dict | None = None               # TODO(BE1 연동): {content_id, title}
+    festival: FestivalRef | None = None        # 관련 축제가 없으면 null
     view_count: int
     comment_count: int
     is_mine: bool
