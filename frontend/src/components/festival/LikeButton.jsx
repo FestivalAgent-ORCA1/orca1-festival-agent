@@ -56,7 +56,7 @@ export default function LikeButton({ festival, className = "" }) {
                   "--dx": `${Math.cos((i / 12) * Math.PI * 2) * (27 + (i % 3) * 7)}px`,
                   "--dy": `${Math.sin((i / 12) * Math.PI * 2) * (27 + (i % 3) * 7) - 5}px`,
                   "--turn": `${i * 37}deg`,
-                  "--particle-color": ["#e87c59", "#8eaa62", "#6685e3"][i % 3],
+                  "--particle-color": ["var(--main)", "var(--lime)", "var(--sub)"][i % 3],
                 }}
               />
             ))}

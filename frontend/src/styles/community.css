@@ -21,7 +21,7 @@
 .community-filter a,
 .back-link a,
 .comment-login a {
-  color: var(--blue);
+  color: var(--main-strong);
   text-decoration: underline;
   text-underline-offset: 3px;
 }
@@ -130,7 +130,7 @@
   resize: vertical;
 }
 textarea:focus-visible {
-  outline: 3px solid var(--blue);
+  outline: 3px solid var(--main);
   outline-offset: 3px;
 }
 .comments {
@@ -243,5 +243,5 @@ textarea:focus-visible {
   width: 8px;
   height: 8px;
   border-radius: 100%;
-  background: var(--orange);
+  background: var(--main);
 }

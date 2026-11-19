@@ -2,9 +2,13 @@
   --paper: #f9f7f1;
   --ink: #242721;
   --muted: #6d7067;
-  --blue: #2855e7;
+  --main: #d25440;
+  --main-strong: #b83f2b;
+  --main-deep: #7c2a1d;
+  --main-soft: #e38172;
+  --main-light: #f9e9e6;
+  --sub: #d99653;
   --lime: #ddedb4;
-  --orange: #ef704d;
   --line: #d9dacf;
   --round: cubic-bezier(0.2, 0.8, 0.2, 1);
   --font-body: Plex, "Malgun Gothic", sans-serif;

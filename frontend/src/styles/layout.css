@@ -35,7 +35,7 @@
     height: 21px;
   }
   .bottom-nav-item[aria-current="page"] {
-    color: var(--blue);
+    color: var(--main-strong);
     font-weight: 600;
   }
   .bottom-nav-item[aria-current="page"] .icon {
