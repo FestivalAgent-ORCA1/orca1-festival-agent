@@ -105,6 +105,7 @@ def main() -> None:
     parser.add_argument("--date", type=date.fromisoformat, default=None, help="기준 날짜 YYYY-MM-DD (기본: 오늘)")
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
+    logging.getLogger("httpx").setLevel(logging.WARNING)  # 요청 주소에 API 키가 있어 INFO 로그 끔
     with SessionLocal() as db:
         print(send_notifications(db, today=args.date))
 

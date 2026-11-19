@@ -4,6 +4,7 @@
 - 소개글이 바뀐 축제는 sync_festivals가 기존 태그를 지우므로 자동으로 다시 대상이 된다
 - tags.md 목록에 없는 코드는 버림. 유효한 태그가 하나도 없으면 저장하지 않음 (다음 실행 때 다시 시도)
 - Groq 무료 사용량을 아끼려고 축제 BATCH_SIZE개를 한 번에 보냄
+- 사용량 제한(분당 8,000토큰)에 걸리면 RATE_LIMIT_WAIT초 쉬고 그 묶음을 한 번 더 보냄. 또 걸리면 멈춤
 
 직접 실행 (backend/에서, 공용 DB에 쓰므로 BE1만):
     python -m app.batch.extract_tags              # 태그 없는 축제 전부
@@ -13,6 +14,7 @@
 import argparse
 import json
 import logging
+import time
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -27,6 +29,7 @@ logger = logging.getLogger(__name__)
 BATCH_SIZE = 10
 OVERVIEW_CHARS = 400  # 토큰 절약
 MAX_TAGS = 3
+RATE_LIMIT_WAIT = 60  # 초. Groq 한도는 1분 단위라 1분 쉬면 다시 보낼 수 있음
 
 SYSTEM_PROMPT = (
     "너는 한국 축제 분류기야. 각 축제에 아래 태그 중 가장 잘 맞는 것을 1~3개 골라.\n"
@@ -88,14 +91,26 @@ def ask_tags(festivals: list[Festival]) -> dict[str, list[str]]:
     return out
 
 
+def ask_tags_with_wait(festivals: list[Festival]) -> dict[str, list[str]]:
+    """ask_tags + 사용량 제한이면 RATE_LIMIT_WAIT초 쉬고 한 번 더. 그래도 실패하면 AiError"""
+    try:
+        return ask_tags(festivals)
+    except AiError as exc:
+        if exc.code != "AI_RATE_LIMITED":
+            raise
+        logger.info("Groq 사용량 제한 → %d초 쉬고 다시 시도", RATE_LIMIT_WAIT)
+        time.sleep(RATE_LIMIT_WAIT)
+        return ask_tags(festivals)
+
+
 def extract_tags(db: Session, *, limit: int | None = None) -> dict:
-    """반환: {"targets", "tagged", "skipped", "ai_failed"}. 사용량 제한에 걸리면 거기서 멈춤"""
+    """반환: {"targets", "tagged", "skipped", "ai_failed"}. 쉬고 다시 보내도 사용량 제한이면 거기서 멈춤"""
     festivals = targets(db, limit)
     stats = {"targets": len(festivals), "tagged": 0, "skipped": 0, "ai_failed": 0}
     for start in range(0, len(festivals), BATCH_SIZE):
         chunk = festivals[start : start + BATCH_SIZE]
         try:
-            result = ask_tags(chunk)
+            result = ask_tags_with_wait(chunk)
         except AiError as exc:
             stats["ai_failed"] += len(chunk)
             logger.warning("태그 추출 실패 (%d개): %s", len(chunk), exc)
@@ -118,6 +133,7 @@ def main() -> None:
     parser.add_argument("--limit", type=int, default=None, help="처리할 최대 축제 수")
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
+    logging.getLogger("httpx").setLevel(logging.WARNING)  # 요청 주소에 API 키가 있어 INFO 로그 끔
     with SessionLocal() as db:
         print(extract_tags(db, limit=args.limit))
 
