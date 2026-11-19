@@ -79,6 +79,8 @@ export function createDemoAuth(storage, getToken) {
     updateMe: async ({ nickname }) =>
       save({ ...current(), nickname: checkNickname(nickname) }),
     async updatePreferences({ age_group, regions = [], tags = [] }) {
+      // 실제 서버처럼 연령대는 필수입니다.
+      if (!age_group) throw invalid("연령대를 골라 주세요.");
       if (regions.length > 3) throw invalid("지역은 3곳까지 고를 수 있어요.");
       if (tags.length < 1 || tags.length > 5)
         throw invalid("관심사는 1~5개 골라 주세요.");
