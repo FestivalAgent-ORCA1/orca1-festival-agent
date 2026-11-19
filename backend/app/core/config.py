@@ -9,8 +9,9 @@ BACKEND_DIR = Path(__file__).resolve().parents[2]  # backend/
 
 class Settings(BaseSettings):
     # extra="ignore": .env에 여기 없는 키가 있어도 시작할 때 오류를 내지 않음
+    # str_strip_whitespace: 값 앞뒤 공백·줄바꿈 제거 (GitHub Secrets에 붙여 넣을 때 끝에 줄바꿈이 따라와 TourAPI 403이 났음, 2026-11-19)
     model_config = SettingsConfigDict(
-        env_file=BACKEND_DIR / ".env", env_file_encoding="utf-8", extra="ignore"
+        env_file=BACKEND_DIR / ".env", env_file_encoding="utf-8", extra="ignore", str_strip_whitespace=True
     )
 
     # DB
