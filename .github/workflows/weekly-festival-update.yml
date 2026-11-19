@@ -1,0 +1,78 @@
+# 매주 축제 목록 갱신 → 태그 붙이기 (담당 BE1, docs/workflow.md '자동 실행 작업')
+#
+# - 무료 Render 서버는 15분 동안 요청이 없으면 잠들어서 서버 안의 APScheduler가 멈춤
+#   → GitHub이 빌려주는 임시 컴퓨터에서 배치 두 개를 차례로 실행하고 끝나면 컴퓨터는 사라짐
+# - 예약 실행은 기본 브랜치(main)에 있는 이 파일 기준으로만 동작함. 실행하는 코드는 develop 최신
+# - 필요한 Secrets: DATABASE_URL, AIVEN_CA_PEM, TOURAPI_SERVICE_KEY, GROQ_API_KEY, GROQ_MODEL
+# - Render의 ENABLE_SCHEDULER는 false로 유지 (같은 작업이 두 곳에서 돌지 않게)
+
+name: 축제 주간 갱신
+
+on:
+  schedule:
+    - cron: "0 19 * * 0" # UTC 일요일 19:00 = 한국 월요일 04:00 (GitHub 사정으로 늦게 시작될 수 있음)
+  workflow_dispatch: # Actions 화면의 'Run workflow' 버튼으로 직접 실행
+
+concurrency:
+  group: weekly-festival-update # 이전 실행이 끝나기 전에 또 시작하지 않게
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash # -eo pipefail: 배치가 실패하면 tee를 거쳐도 단계가 실패로 표시됨
+        working-directory: backend
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      TOURAPI_SERVICE_KEY: ${{ secrets.TOURAPI_SERVICE_KEY }}
+      GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+      GROQ_MODEL: ${{ secrets.GROQ_MODEL }}
+      SECRET_KEY: batch-not-used # 설정에 꼭 있어야 해서 넣는 값. 배치는 로그인 토큰을 만들지 않음
+      TZ: Asia/Seoul
+
+    steps:
+      - name: develop 코드 받기
+        uses: actions/checkout@v5
+        with:
+          ref: develop
+
+      - name: Python 3.11 준비
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.11"
+          cache: pip
+          cache-dependency-path: backend/requirements.txt
+
+      - name: 패키지 설치
+        run: pip install -r requirements.txt
+
+      - name: Secrets 확인, Aiven 인증서 파일 만들기
+        env:
+          AIVEN_CA_PEM: ${{ secrets.AIVEN_CA_PEM }}
+        run: |
+          missing=0
+          for name in DATABASE_URL AIVEN_CA_PEM TOURAPI_SERVICE_KEY GROQ_API_KEY GROQ_MODEL; do
+            if [ -z "${!name}" ]; then
+              echo "::error::Secret '$name'이 비어 있어요 (Settings → Secrets and variables → Actions)"
+              missing=1
+            fi
+          done
+          [ "$missing" -eq 0 ]
+          printf '%s\n' "$AIVEN_CA_PEM" > "$RUNNER_TEMP/ca.pem"
+          echo "DB_SSL_CA=$RUNNER_TEMP/ca.pem" >> "$GITHUB_ENV"
+
+      - name: 축제 목록 갱신 (sync_festivals)
+        run: |
+          echo "### sync_festivals" >> "$GITHUB_STEP_SUMMARY"
+          python -m app.batch.sync_festivals | tee -a "$GITHUB_STEP_SUMMARY"
+
+      - name: 태그 붙이기 (extract_tags)
+        run: |
+          echo "### extract_tags" >> "$GITHUB_STEP_SUMMARY"
+          python -m app.batch.extract_tags | tee -a "$GITHUB_STEP_SUMMARY"
