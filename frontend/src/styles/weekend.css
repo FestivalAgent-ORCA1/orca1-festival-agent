@@ -1,29 +1,29 @@
 @font-face {
   font-family: Bagel;
-  src: url("/assets/BagelFatOne.ttf") format("truetype");
+  src: url("/assets/BagelFatOne-Regular.woff2") format("woff2");
   font-display: swap;
 }
 @font-face {
   font-family: Plex;
-  src: url("/assets/Plex-400.ttf") format("truetype");
+  src: url("/assets/IBMPlexSansKR-Regular.woff2") format("woff2");
   font-weight: 400;
   font-display: swap;
 }
 @font-face {
   font-family: Plex;
-  src: url("/assets/Plex-500.ttf") format("truetype");
+  src: url("/assets/IBMPlexSansKR-Medium.woff2") format("woff2");
   font-weight: 500;
   font-display: swap;
 }
 @font-face {
   font-family: Plex;
-  src: url("/assets/Plex-600.ttf") format("truetype");
+  src: url("/assets/IBMPlexSansKR-SemiBold.woff2") format("woff2");
   font-weight: 600;
   font-display: swap;
 }
 @font-face {
   font-family: Plex;
-  src: url("/assets/Plex-700.ttf") format("truetype");
+  src: url("/assets/IBMPlexSansKR-Bold.woff2") format("woff2");
   font-weight: 700;
   font-display: swap;
 }
@@ -90,7 +90,7 @@ button:focus-visible,
 a:focus-visible,
 input:focus-visible,
 select:focus-visible {
-  outline: 3px solid var(--blue);
+  outline: 3px solid var(--main);
   outline-offset: 5px;
 }
 ::selection {
@@ -105,10 +105,16 @@ select:focus-visible {
   margin-inline: auto;
 }
 .display {
-  font-family: Bagel, Plex, sans-serif;
+  color: var(--main);
+  font-family: var(--font-display);
   font-weight: 400;
   letter-spacing: -0.025em;
   line-height: 1.16;
+}
+/* 닉네임에 베이글체에 없는 한글이 있어도 제목 전체에 같은 글꼴을 적용합니다. */
+.display-with-nickname {
+  font-family: var(--font-body);
+  font-weight: 700;
 }
 .eyebrow {
   font-size: 11px;
@@ -201,15 +207,15 @@ select:focus-visible {
   box-shadow: 0 0 0 var(--key-edge);
 }
 .key.current {
-  --key-face: var(--ink);
-  --key-edge: #090b06;
+  --key-face: var(--main-strong);
+  --key-edge: var(--main-deep);
   color: var(--paper);
 }
 .key.blue {
-  --key-face: var(--blue);
-  --key-edge: #16339a;
+  --key-face: var(--main-strong);
+  --key-edge: var(--main-deep);
   color: white;
-  border-color: #2445bf;
+  border-color: var(--main-deep);
 }
 .key.white {
   --key-face: white;
@@ -263,12 +269,12 @@ select:focus-visible {
   align-items: center;
   gap: 10px;
   margin-bottom: 24px;
-  color: var(--blue);
+  color: var(--main-strong);
 }
 .small-flower {
   width: 21px;
   height: 21px;
-  color: var(--orange);
+  color: var(--main-strong);
 }
 h1 {
   font-size: clamp(52px, 5.45vw, 83px);
@@ -277,7 +283,7 @@ h1 {
   letter-spacing: -0.025em;
 }
 h1 .word-orange {
-  color: var(--orange);
+  color: var(--main);
   display: inline-block;
   transform: rotate(-2deg);
   position: relative;
@@ -289,7 +295,7 @@ h1 .word-orange:after {
   right: -2%;
   height: 9px;
   bottom: -7px;
-  border: 2px solid var(--orange);
+  border: 2px solid var(--main);
   border-top: 0;
   border-left: 0;
   border-radius: 0 0 70% 40%;
@@ -412,7 +418,7 @@ h1 .word-orange:after {
   left: 9%;
   top: 66px;
   font-size: 12px;
-  color: var(--blue);
+  color: var(--main-strong);
   transform: rotate(-9deg);
   text-align: center;
   line-height: 1.8;
@@ -453,12 +459,12 @@ h1 .word-orange:after {
   right: 10%;
   bottom: 22px;
   z-index: 6;
-  background: #2d54dd;
+  background: var(--main-strong);
   color: white;
   padding: 15px 20px 13px 23px;
   border-radius: 10px;
   transform: rotate(-7deg);
-  box-shadow: 0 8px 0 #1f3c9b;
+  box-shadow: 0 8px 0 var(--main-deep);
   width: 254px;
   display: grid;
   grid-template-columns: 1fr 53px;
@@ -482,7 +488,7 @@ h1 .word-orange:after {
   right: -9px;
 }
 .stub-copy {
-  border-right: 1px dashed #849df2;
+  border-right: 1px dashed var(--main-soft);
   line-height: 1.55;
 }
 .stub-copy small {
@@ -515,7 +521,7 @@ h1 .word-orange:after {
   height: 30px;
   left: 31%;
   top: 20px;
-  color: var(--orange);
+  color: var(--main-strong);
   transform: rotate(13deg);
 }
 .tiny-star {
@@ -524,7 +530,7 @@ h1 .word-orange:after {
   height: 18px;
   bottom: 32px;
   left: 12%;
-  color: var(--blue);
+  color: var(--main-strong);
 }
 .art-smallprint {
   position: absolute;
@@ -609,7 +615,7 @@ h1 .word-orange:after {
   margin-bottom: 54px;
 }
 .loop-strip .spark {
-  color: var(--orange);
+  color: var(--main-strong);
   font-size: 18px;
   line-height: 1;
 }
@@ -630,7 +636,7 @@ h1 .word-orange:after {
   margin-bottom: 27px;
 }
 .section-head .eyebrow {
-  color: var(--blue);
+  color: var(--main-strong);
   margin-bottom: 12px;
   display: block;
 }
@@ -668,7 +674,8 @@ h2 {
     box-shadow 0.16s;
 }
 .mood:hover {
-  background: #efefe3;
+  background: var(--main-light);
+  color: var(--ink);
   transform: translateY(1px);
   box-shadow: 0 2px 0 #e2e5d8;
 }
@@ -677,9 +684,10 @@ h2 {
   box-shadow: none;
 }
 .mood[aria-pressed="true"] {
-  background: var(--lime);
-  border-color: #bfcbab;
-  box-shadow: 0 3px 0 #bdcba3;
+  background: var(--main-light);
+  color: var(--ink);
+  border-color: var(--main);
+  box-shadow: 0 3px 0 var(--main-soft);
 }
 .mood .icon {
   width: 16px;
@@ -817,11 +825,11 @@ h2 {
     fill 0.2s;
 }
 .save-btn[aria-pressed="true"] {
-  color: #e16043;
+  color: var(--main);
 }
 .save-btn[aria-pressed="true"] .icon {
-  fill: #e16043;
-  stroke: #e16043;
+  fill: var(--main);
+  stroke: var(--main);
 }
 .save-btn.celebrate .icon {
   animation: heart-pop 0.45s var(--round);
@@ -854,7 +862,7 @@ h3 {
   text-align: left;
 }
 .ticket-title:hover {
-  color: var(--blue);
+  color: var(--main-strong);
 }
 .ticket-summary {
   color: #6e7564;
@@ -959,7 +967,7 @@ h3 {
   width: 26px;
   height: 26px;
   pointer-events: none;
-  border: 1px solid #e1744e;
+  border: 1px solid var(--main);
   border-radius: 50%;
   z-index: 99;
   animation: ring-out 0.45s ease-out both;
@@ -1195,7 +1203,7 @@ dialog[open] {
   padding: 49px 31px 30px;
 }
 .detail-body .eyebrow {
-  color: var(--blue);
+  color: var(--main-strong);
   font-size: 9px;
 }
 .detail-body h2 {
@@ -1228,6 +1236,7 @@ dialog[open] {
 }
 .detail-actions {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   gap: 8px;
   margin-top: 24px;
@@ -1266,7 +1275,7 @@ dialog[open] {
   margin: auto;
 }
 .about-body .eyebrow {
-  color: var(--blue);
+  color: var(--main-strong);
 }
 .about-body h2 {
   font-size: 34px;
@@ -1285,7 +1294,7 @@ dialog[open] {
   color: #66725b;
 }
 .about-body a {
-  color: var(--blue);
+  color: var(--main-strong);
   text-decoration: underline;
 }
 .about-body .about-foot {
@@ -1688,7 +1697,7 @@ dialog[open] {
     gap: 9px;
     grid-template-columns: 1fr 39px;
     border-radius: 8px;
-    box-shadow: 0 5px 0 #1f3c9b;
+    box-shadow: 0 5px 0 var(--main-deep);
   }
   .stub-copy small {
     font-size: 7px;

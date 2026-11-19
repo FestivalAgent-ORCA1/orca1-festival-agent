@@ -28,7 +28,7 @@
   padding-bottom: 38px;
 }
 .page-intro .eyebrow {
-  color: var(--blue);
+  color: var(--main-strong);
 }
 .page-intro h1 {
   font-size: clamp(36px, 4.1vw, 60px);
@@ -147,7 +147,7 @@
 }
 .loading-flower {
   font-size: 34px;
-  color: var(--orange);
+  color: var(--main-strong);
   animation: loading-turn 3s linear infinite;
 }
 .error-state {
@@ -187,6 +187,7 @@
 }
 .detail-heading,
 .detail-body .detail-heading {
+  color: var(--main);
   font-family: var(--font-body);
   font-size: 30px;
   font-weight: 700;

@@ -76,7 +76,9 @@ function PreferencesForm() {
           <span className="eyebrow">
             {user.onboarded ? "MY TASTE" : "FIRST SETTINGS"}
           </span>
-          <h1 className="display">{user.nickname}님의 주말 취향.</h1>
+          <h1 className="display display-with-nickname">
+            {user.nickname}님의 주말 취향.
+          </h1>
           <p>
             고른 내용으로 축제를 추천해 드려요. 내 정보에서 언제든 바꿀 수
             있어요.

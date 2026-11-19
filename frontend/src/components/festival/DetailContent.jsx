@@ -85,17 +85,26 @@ export default function DetailContent({
               축제 더 구경하기 <Icon name="arrow" />
             </Button>
           ) : (
-            homepage && (
+            <>
               <Button
-                as="a"
-                href={homepage}
-                target="_blank"
-                rel="noopener noreferrer"
+                as={Link}
+                to={`/chat?festival=${encodeURIComponent(festival.content_id)}`}
                 variant="blue"
               >
-                공식 안내 보기 <Icon name="arrow" />
+                이 축제로 일정 짜기 <Icon name="arrow" />
               </Button>
-            )
+              {homepage && (
+                <Button
+                  as="a"
+                  href={homepage}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  variant="white"
+                >
+                  공식 안내 보기 <Icon name="arrow" />
+                </Button>
+              )}
+            </>
           )}
           <LikeButton festival={festival} className="detail-save" />
         </div>
