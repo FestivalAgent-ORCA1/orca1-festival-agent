@@ -122,6 +122,7 @@ def main() -> None:
     parser.add_argument("--max-detail", type=int, default=None, help="상세를 받을 최대 축제 수")
     args = parser.parse_args()
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
+    logging.getLogger("httpx").setLevel(logging.WARNING)  # 요청 주소에 API 키가 있어 INFO 로그 끔
     with SessionLocal() as db:
         print(sync_festivals(db, max_detail=args.max_detail))
 

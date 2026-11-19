@@ -1,7 +1,10 @@
 """Tool: search_nearby_places — 축제 주변 장소 (docs/tool-spec.md 3번)
 
 TourAPI locationBasedList2, 거리순. 결과가 3개 미만이면 반경을 2배로 늘려 한 번 더 찾는다.
+체험 프로그램을 운영하는 회사가 관광지로 등록된 경우가 있어 이름으로 걸러낸다 (_clean_name).
 """
+
+import re
 
 import httpx
 
@@ -14,16 +17,33 @@ CAFE_LCLS2 = {"FD05"}
 DEFAULT_RADIUS, MAX_RADIUS = 3000, 20000
 FETCH_ROWS = 100  # 카페·음식점을 나눠 걸러내야 해서 넉넉히 받음
 
+# 2026-11-19 확인: 축제 23곳 주변 관광지 95개 중 6개가 회사 이름 (모두 체험관광 EX, 사진 없음)
+#   '주식회사뷰티홀릭', '컬러브릿지협동조합' → 이름이 회사명뿐이라 뺌
+#   '수달궁(문화살롱주식회사)' → 실제 장소라 괄호(운영 회사)만 떼고 '수달궁'으로
+COMPANY_WORDS = re.compile(r"주식회사|유한회사|\(주\)|㈜|협동조합|조합법인|회사법인")
+TRAILING_PAREN = re.compile(r"\s*\(([^()]*)\)\s*$")
+
+
+def _clean_name(title: str | None) -> str | None:
+    """장소 이름에서 운영 회사 표기를 뗀다. 이름이 회사명뿐이면 None (목록에서 뺌)"""
+    name = (title or "").strip()
+    paren = TRAILING_PAREN.search(name)
+    if paren and (paren.group(1).strip() == "주" or COMPANY_WORDS.search(paren.group(1))):
+        name = name[: paren.start()].strip()
+    if not name or COMPANY_WORDS.search(name):
+        return None
+    return name
+
 
 def _is_cafe(item: dict) -> bool:
     return item.get("cat3") in CAFE_CAT3 or (item.get("lclsSystm2") or "") in CAFE_LCLS2
 
 
-def _to_place(item: dict, category: str) -> dict:
+def _to_place(item: dict, category: str, name: str) -> dict:
     distance = tour.to_float(item.get("dist"))
     return {
         "content_id": tour.text(item.get("contentid")),
-        "name": tour.text(item.get("title")),
+        "name": name,
         "category": category,
         "address": " ".join(filter(None, [tour.text(item.get("addr1")), tour.text(item.get("addr2"))])) or None,
         "image_url": tour.text(item.get("firstimage")),
@@ -53,7 +73,12 @@ def find_places(
             items = [i for i in items if _is_cafe(i)]
         elif category == "restaurant":
             items = [i for i in items if not _is_cafe(i)]
-        return [_to_place(i, category) for i in items if tour.text(i.get("contentid"))]
+        places = []
+        for item in items:
+            name = _clean_name(tour.text(item.get("title")))
+            if name and tour.text(item.get("contentid")):
+                places.append(_to_place(item, category, name))
+        return places
 
     places = search(radius)
     if len(places) < 3 and radius < MAX_RADIUS:

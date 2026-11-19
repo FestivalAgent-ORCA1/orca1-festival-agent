@@ -95,6 +95,9 @@ for 회차 in 1..5:
 | `extract_tags` | `sync_festivals` 끝난 직후 | BE1 | 태그가 없거나 소개글이 바뀐 축제만 AI로 태그 1~3개 붙이기 |
 | `send_notifications` | 매일 09:00 | BE2 | 찜 알림 만들기 (아래) |
 
+- BE1 작업 두 개(`sync_festivals` → `extract_tags`)는 **GitHub Actions**로 실행: [.github/workflows/weekly-festival-update.yml](../.github/workflows/weekly-festival-update.yml). 무료 Render 서버는 잠들면 APScheduler도 멈추기 때문. Actions 화면에서 직접 실행도 가능
+- `extract_tags`는 Groq 사용량 제한에 걸리면 60초 쉬고 그 묶음을 한 번 더 보냄. 그래도 실패하면 멈추고 남은 축제는 다음 실행 때 처리
+
 ### 찜 알림 (`send_notifications`)
 
 ```text

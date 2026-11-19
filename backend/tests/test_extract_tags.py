@@ -52,6 +52,25 @@ def test_stop_on_rate_limit(db, monkeypatch):
         raise AiError("AI_RATE_LIMITED")
 
     monkeypatch.setattr(module, "chat_json", limited)
+    monkeypatch.setattr(module, "RATE_LIMIT_WAIT", 0)
     stats = module.extract_tags(db)
-    assert len(calls) == 1  # 첫 묶음에서 멈춤
+    assert len(calls) == 2  # 첫 묶음: 처음 + 쉬고 한 번 더 → 그래도 실패라 멈춤
     assert stats["tagged"] == 0 and stats["ai_failed"] == module.BATCH_SIZE
+
+
+def test_retry_after_rate_limit(db, monkeypatch):
+    add(db, "1", "김치 축제")
+    calls = []
+
+    def limited_once(messages, **kwargs):
+        calls.append(1)
+        if len(calls) == 1:
+            raise AiError("AI_RATE_LIMITED")
+        return {"results": [{"content_id": "1", "tags": ["food"]}]}
+
+    monkeypatch.setattr(module, "chat_json", limited_once)
+    monkeypatch.setattr(module, "RATE_LIMIT_WAIT", 0)
+    stats = module.extract_tags(db)
+    assert len(calls) == 2
+    assert stats == {"targets": 1, "tagged": 1, "skipped": 0, "ai_failed": 0}
+    assert db.get(Festival, "1").tag_codes == ["food"]

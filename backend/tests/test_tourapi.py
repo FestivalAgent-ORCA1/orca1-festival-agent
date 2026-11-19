@@ -10,7 +10,7 @@ from app.core.config import settings
 from app.models.festival import Festival
 from app.services.festival_service import today_kst
 from app.tools import tourapi_client as tour
-from app.tools.search_nearby_places import search_nearby_places
+from app.tools.search_nearby_places import _clean_name, search_nearby_places
 
 
 @pytest.fixture(autouse=True)
@@ -119,6 +119,44 @@ def test_nearby_tool_filters_cafe():
     assert [p["content_id"] for p in restaurants["places"]] == ["p1", "p3", "p4"]
     assert restaurants["places"][0]["distance_m"] == 120
     assert [p["name"] for p in cafes["places"]] == ["찻집"]
+
+
+def test_clean_company_names():
+    # 실제 TourAPI 응답에 있던 이름 (2026-11-19, 광안리·전주 등)
+    assert _clean_name("주식회사뷰티홀릭") is None
+    assert _clean_name("컬러브릿지협동조합") is None
+    assert _clean_name("(주)피알아이피") is None
+    assert _clean_name("수달궁(문화살롱주식회사)") == "수달궁"
+    assert _clean_name("착한공작소(착한공작소협동조합)") == "착한공작소"
+    assert _clean_name("한옥카페(주)") == "한옥카페"
+    assert _clean_name("부산 영화의 거리") == "부산 영화의 거리"
+    assert _clean_name("장산 (부산 국가지질공원)") == "장산 (부산 국가지질공원)"  # 회사 아닌 괄호는 그대로
+    assert _clean_name("") is None and _clean_name(None) is None
+
+
+def test_nearby_skips_company_and_widens():
+    near = [
+        {"contentid": "c1", "title": "주식회사뷰티홀릭", "dist": "600"},
+        {"contentid": "c2", "title": "수달궁(문화살롱주식회사)", "dist": "1500"},
+        {"contentid": "c3", "title": "부산 영화의 거리", "dist": "2300"},
+    ]
+    far = near + [{"contentid": "c4", "title": "전포 삼거리", "dist": "4100"}]
+    radii = []
+
+    def fake_call(operation, params, client=None):
+        radii.append(params["radius"])
+        return {"items": near if params["radius"] == 3000 else far, "total": 0}
+
+    import app.tools.tourapi_client as module
+    orig = module.call
+    module.call = fake_call
+    try:
+        result = search_nearby_places(129.1, 35.1, "attraction")
+    finally:
+        module.call = orig
+    # 회사를 빼면 3km 안에 2곳뿐 → 6km로 넓혀서 다시 찾음
+    assert radii == [3000, 6000]
+    assert [p["name"] for p in result["places"]] == ["수달궁", "부산 영화의 거리", "전포 삼거리"]
 
 
 def test_nearby_api(client, db, monkeypatch):
