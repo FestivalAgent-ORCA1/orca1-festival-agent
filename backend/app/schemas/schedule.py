@@ -2,6 +2,8 @@ from datetime import date, datetime, time
 
 from pydantic import BaseModel, Field, field_serializer
 
+from app.schemas.festival import FestivalSummary  # BE1: 축제 카드 모양
+
 
 class TimeHHMM(BaseModel):
     """시각을 api-spec 형식 "HH:MM"으로 응답하기 위한 공통 부모 클래스"""
@@ -47,7 +49,7 @@ class ScheduleDetailResponse(TimeHHMM):
     end_time: time
     total_travel_min: int
     items: list[ScheduleItemIn]
-    festival: dict | None = None   # TODO(BE1 연동): FestivalSummary로 교체
+    festival: FestivalSummary | None = None   # 중심 축제 카드
     created_at: datetime
 
 
@@ -56,5 +58,5 @@ class ScheduleListItemResponse(BaseModel):
     id: int
     title: str
     visit_date: date
-    festival: dict | None = None   # TODO(BE1 연동): FestivalSummary로 교체
+    festival: FestivalSummary | None = None   # 중심 축제 카드
     item_count: int
