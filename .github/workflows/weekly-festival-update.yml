@@ -2,7 +2,7 @@
 #
 # - 무료 Render 서버는 15분 동안 요청이 없으면 잠들어서 서버 안의 APScheduler가 멈춤
 #   → GitHub이 빌려주는 임시 컴퓨터에서 배치 두 개를 차례로 실행하고 끝나면 컴퓨터는 사라짐
-# - 예약 실행은 기본 브랜치(main)에 있는 이 파일 기준으로만 동작함. 실행하는 코드는 develop 최신
+# - 예약 실행은 기본 브랜치에 있는 이 파일 기준으로만 동작함 (2026-11-19 기본 브랜치를 develop으로 바꿈). 실행하는 코드는 develop 최신
 # - 필요한 Secrets: DATABASE_URL, AIVEN_CA_PEM, TOURAPI_SERVICE_KEY, GROQ_API_KEY, GROQ_MODEL
 # - Render의 ENABLE_SCHEDULER는 false로 유지 (같은 작업이 두 곳에서 돌지 않게)
 

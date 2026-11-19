@@ -61,8 +61,13 @@ def call(operation: str, params: dict | None = None, *, client: httpx.Client | N
                 return _parse(response)
             except httpx.TimeoutException:
                 last_error = TourApiError("TOURAPI_TIMEOUT")
+            # 오류 문구에 요청 주소(serviceKey 포함)를 넣지 않는다 (AI Tool 결과·로그로 키가 새어 나감)
+            except httpx.HTTPStatusError as exc:
+                last_error = TourApiError(
+                    "TOURAPI_HTTP_ERROR", f"관광 정보를 가져오지 못했어요. (HTTP {exc.response.status_code})"
+                )
             except httpx.HTTPError as exc:
-                last_error = TourApiError("TOURAPI_HTTP_ERROR", f"관광 정보를 가져오지 못했어요. ({exc})")
+                last_error = TourApiError("TOURAPI_HTTP_ERROR", f"관광 정보를 가져오지 못했어요. ({type(exc).__name__})")
             except TourApiError as exc:
                 # 키·파라미터 오류는 다시 해도 같으므로 바로 실패
                 raise exc

@@ -27,7 +27,7 @@
 ## 구조
 
 - Vercel 프로젝트 `orca1-festival-agent-frontend` 하나가 이 저장소의 `frontend/` 폴더를 배포합니다. FE3(이혜정)의 개인 Hobby 계정에 있습니다.
-- **Production 브랜치는 임시로 `develop`** 입니다. 구축 기획서상 배포 브랜치는 `main`이지만 아직 `main`에 프론트 코드가 없어서 바꿔 두었습니다. 6주차에 BE1이 develop을 `main`에 올리면 Vercel **Settings → Environments → Production → Branch Tracking**을 `main`으로 되돌립니다.
+- **Production 브랜치는 `develop`** 입니다. 구축 기획서에는 배포 브랜치가 `main`이라고 되어 있지만, 서비스를 Aiven 무료 플랜 종료(2026-12-21)와 함께 끝내기로 해서 **끝까지 `develop`으로 배포**합니다. Render 백엔드도 `develop`입니다 (2026-11-19 결정). `main`에는 마지막에 최종 코드만 남기므로, Vercel **Branch Tracking**을 `main`으로 바꾸지 않습니다.
 - 다른 브랜치에 push하면 Vercel이 **미리 보기(Preview) 주소**를 따로 만듭니다 (Deployments 탭). 다른 팀원이 push한 커밋도 자동 배포되는 것을 확인했습니다.
 - 조직의 **public** 저장소라 Hobby(무료) 플랜으로 배포할 수 있습니다. 저장소를 private으로 바꾸면 Hobby로는 배포할 수 없으니 주의해 주세요 ([Vercel 문서](https://vercel.com/docs/git)).
 

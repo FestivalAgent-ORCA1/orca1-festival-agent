@@ -39,6 +39,21 @@ def test_parse_empty_single_and_error():
     assert "SERVICE_KEY" in err.value.message
 
 
+def test_http_error_hides_service_key(monkeypatch):
+    monkeypatch.setattr(settings, "TOURAPI_SERVICE_KEY", "secret-key-123")
+    with pytest.raises(tour.TourApiError) as err:
+        tour.call("x", client=mock_client(lambda r: httpx.Response(403)))
+    assert "403" in err.value.message
+    assert "secret-key-123" not in str(err.value) and "serviceKey" not in str(err.value)
+
+
+def test_settings_strip_newline():
+    from app.core.config import Settings
+
+    s = Settings(_env_file=None, DATABASE_URL="sqlite://\n", SECRET_KEY="k", TOURAPI_SERVICE_KEY="abc\n", GROQ_MODEL=" m \n")
+    assert s.TOURAPI_SERVICE_KEY == "abc" and s.GROQ_MODEL == "m" and s.DATABASE_URL == "sqlite://"
+
+
 def test_retry_once_on_timeout():
     calls = []
 
