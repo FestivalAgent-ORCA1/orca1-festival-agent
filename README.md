@@ -8,7 +8,7 @@
 | --- | --- | --- |
 | `frontend/` | 웹 화면 | React, Vite (배포: Vercel) |
 | `backend/` | API 서버, AI 에이전트, 자동 실행 작업 | FastAPI, SQLAlchemy, Alembic (배포: Render) |
-| `docs/` | 팀 공용 규격 문서 | [API](docs/api-spec.md) · [DB](docs/db-schema.md) · [태그](docs/tags.md) · [Tool](docs/tool-spec.md) · [채팅 응답](docs/agent-response-format.md) · [AI 흐름](docs/workflow.md) |
+| `docs/` | 팀 공용 규격 문서 | [사용자 이용 시나리오](docs/user-scenarios.md) · [API](docs/api-spec.md) · [DB](docs/db-schema.md) · [태그](docs/tags.md) · [Tool](docs/tool-spec.md) · [채팅 응답](docs/agent-response-format.md) · [AI 흐름](docs/workflow.md) |
 
 DB는 Aiven MySQL 공용 DB 하나를 함께 쓴다. 외부 API는 TourAPI(축제·장소), 카카오모빌리티(길찾기), Groq(AI)를 쓴다.
 
