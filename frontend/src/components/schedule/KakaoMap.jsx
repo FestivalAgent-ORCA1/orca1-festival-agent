@@ -4,7 +4,8 @@ import { categoryNames } from "../../lib/itinerary.js";
 // 카카오맵 JavaScript 키는 브라우저에 공개되는 키입니다.
 // 카카오 개발자 콘솔 > 플랫폼 > Web에 허용 도메인(localhost:5173, 배포 주소)을 꼭 등록하세요.
 const APP_KEY = import.meta.env.VITE_KAKAO_MAP_KEY || "";
-const ROUTE_COLOR = "#2855e7";
+// 팀 메인 색 (--main). SDK 선 색은 CSS 변수를 못 읽어서 값을 직접 씁니다.
+const ROUTE_COLOR = "#d25440";
 
 let sdkPromise = null;
 function loadKakaoSdk() {
