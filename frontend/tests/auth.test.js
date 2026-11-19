@@ -83,3 +83,25 @@ test("예시 계정은 명세의 입력 규칙을 지킨다", async () => {
     { status: 422 },
   );
 });
+
+test("첫 설정은 실제 서버처럼 연령대를 꼭 받는다", async () => {
+  let token = null;
+  const demo = createDemoAuth(memoryStorage(), () => token);
+  token = (
+    await demo.signup({
+      email: "age@example.com",
+      password: "password123",
+      nickname: "연령대",
+    })
+  ).access_token;
+  await assert.rejects(
+    demo.updatePreferences({ age_group: null, regions: [], tags: ["music"] }),
+    { status: 422 },
+  );
+  const user = await demo.updatePreferences({
+    age_group: "20s",
+    regions: [],
+    tags: ["music"],
+  });
+  assert.equal(user.age_group, "20s");
+});

@@ -50,6 +50,11 @@ function PreferencesForm() {
     }));
   const submit = async (event) => {
     event.preventDefault();
+    // 서버(PreferencesRequest)는 연령대를 꼭 받습니다. NULL은 온보딩 전에만 허용(docs/db-schema.md).
+    if (!ageGroup) {
+      setError("연령대를 골라 주세요.");
+      return;
+    }
     if (!picked.tags.length) {
       setError("관심사를 하나 이상 골라 주세요.");
       return;
@@ -57,7 +62,7 @@ function PreferencesForm() {
     setSubmitting(true);
     setError("");
     try {
-      await updatePreferences({ age_group: ageGroup || null, ...picked });
+      await updatePreferences({ age_group: ageGroup, ...picked });
       navigate(redirect, { replace: true });
     } catch (err) {
       setError(err.message || "저장하지 못했어요. 다시 시도해 주세요.");
@@ -79,14 +84,15 @@ function PreferencesForm() {
         </div>
         <form className="auth-form" onSubmit={submit}>
           <label className="auth-field">
-            <span>
-              연령대 <span className="auth-hint">선택</span>
-            </span>
+            연령대
             <select
+              required
               value={ageGroup}
               onChange={(event) => setAgeGroup(event.target.value)}
             >
-              <option value="">선택하지 않을게요</option>
+              <option value="" disabled>
+                연령대를 골라 주세요
+              </option>
               {ageGroups.map(([code, name]) => (
                 <option key={code} value={code}>
                   {name}

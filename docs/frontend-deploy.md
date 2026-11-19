@@ -1,13 +1,14 @@
 # 프론트 배포 (Vercel)
 
-> 담당: FE3 · 상태: **배포됨 · 예시(mock) 모드** (2026-11-18 기준)
+> 담당: FE3 · 상태: **배포됨 · API 모드** (2026-11-19 기준)
 
 ## 배포 주소
 
 **https://orca1-festival-agent-frontend.vercel.app**
 
-- 지금은 **`develop` 브랜치**를 배포하고, 백엔드 없이 **예시(mock) 모드**로 뜹니다 (화면 위 "미리 보기" 띠, 예시 축제 3곳·예시 계정·글·알림).
+- **`develop` 브랜치**를 배포하고, Render 백엔드(`https://orca1-festival-agent.onrender.com`)의 실제 데이터를 씁니다.
 - `develop`에 머지될 때마다 자동으로 다시 배포됩니다.
+- Render 무료 서버는 한동안 요청이 없으면 잠들어서, **첫 요청은 1분 가까이 걸릴 수 있습니다** (`api/client.js`의 제한 시간 90초).
 
 ## 현재 상태
 
@@ -16,10 +17,10 @@
 | 배포 설정 파일 (`frontend/vercel.json`) | FE3 | ✅ 완료 (PR #7) |
 | Vercel GitHub 앱 조직 설치 | BE1 | ✅ 완료 (orca1-festival-agent 저장소) |
 | Vercel 프로젝트 연결 (FE3 개인 Hobby 계정) | FE3 | ✅ 완료 |
-| 예시 모드 배포 | FE3 | ✅ 완료 |
-| 백엔드 Render 배포 → 주소 공유 | BE1 | ⏳ 대기 |
-| Vercel 환경 변수(`VITE_DATA_MODE=api`, `VITE_API_BASE_URL`) 입력 → 다시 배포 | FE3 | ⏳ Render 주소가 나온 후 |
-| 백엔드 `CORS_ORIGINS`에 위 배포 주소 추가 | BE1 | ⏳ |
+| 예시 모드 배포 | FE3 | ✅ 완료 (11/18) |
+| 백엔드 Render 배포 → 주소 공유 | BE1 | ✅ 완료 |
+| 백엔드 `CORS_ORIGINS`에 Vercel·로컬 주소 허용 | BE1 | ✅ 확인 (11/19, Vercel 주소·`127.0.0.1:5173`·`localhost:5173` 사전 요청 통과) |
+| Vercel 환경 변수(`VITE_DATA_MODE=api`, `VITE_API_BASE_URL`) 입력 → 다시 배포 | FE3 | ✅ 완료 (11/19) |
 | 카카오 JavaScript SDK 도메인에 위 배포 주소 등록 | FE2 | ⏳ |
 
 ## 구조
