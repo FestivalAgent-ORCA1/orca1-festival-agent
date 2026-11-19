@@ -21,7 +21,8 @@
 | 백엔드 Render 배포 → 주소 공유 | BE1 | ✅ 완료 |
 | 백엔드 `CORS_ORIGINS`에 Vercel·로컬 주소 허용 | BE1 | ✅ 확인 (11/19, Vercel 주소·`127.0.0.1:5173`·`localhost:5173` 사전 요청 통과) |
 | Vercel 환경 변수(`VITE_DATA_MODE=api`, `VITE_API_BASE_URL`) 입력 → 다시 배포 | FE3 | ✅ 완료 (11/19) |
-| 카카오 JavaScript SDK 도메인에 위 배포 주소 등록 | FE2 | ⏳ |
+| 카카오 JavaScript SDK 도메인에 위 배포 주소 등록 | FE2 | ✅ 완료 (11/19) |
+| Vercel 환경 변수 `VITE_KAKAO_MAP_KEY` 입력 → 다시 배포 | FE3 | ✅ 완료 (11/19, FE2에게 키 받음) |
 
 ## 구조
 
