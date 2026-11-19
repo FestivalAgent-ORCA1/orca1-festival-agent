@@ -91,11 +91,14 @@ for 회차 in 1..5:
 
 | 작업 | 시각 (한국 시간) | 담당 | 하는 일 |
 | --- | --- | --- | --- |
-| `sync_festivals` | 매주 월요일 04:00 | BE1 | 오늘~90일 뒤 축제를 `searchFestival2`로 받아 `festivals`에 저장·갱신. `modifiedtime`이 바뀐 축제만 상세·소개 다시 받기 |
+| `sync_festivals` | 매주 월요일 04:07 | BE1 | 오늘~90일 뒤 축제를 `searchFestival2`로 받아 `festivals`에 저장·갱신. `modifiedtime`이 바뀐 축제만 상세·소개 다시 받기 |
 | `extract_tags` | `sync_festivals` 끝난 직후 | BE1 | 태그가 없거나 소개글이 바뀐 축제만 AI로 태그 1~3개 붙이기 |
-| `send_notifications` | 매일 09:00 | BE2 | 찜 알림 만들기 (아래) |
+| `send_notifications` | 매일 09:07, 12:07 (두 번) | BE2 | 찜 알림 만들기 (아래) |
 
-- BE1 작업 두 개(`sync_festivals` → `extract_tags`)는 **GitHub Actions**로 실행: [.github/workflows/weekly-festival-update.yml](../.github/workflows/weekly-festival-update.yml). 무료 Render 서버는 잠들면 APScheduler도 멈추기 때문. Actions 화면에서 직접 실행도 가능
+- 세 작업 모두 **GitHub Actions**로 실행 (2026-11-19). 무료 Render 서버는 잠들면 APScheduler도 멈추기 때문. Render의 `ENABLE_SCHEDULER`는 `false` 유지. Actions 화면에서 직접 실행도 가능
+  - 축제 갱신: [.github/workflows/weekly-festival-update.yml](../.github/workflows/weekly-festival-update.yml)
+  - 찜 알림: [.github/workflows/daily-notifications.yml](../.github/workflows/daily-notifications.yml)
+- 시각을 정각이 아니라 **7분**으로 둔 이유: GitHub은 매시 정각에 예약 실행이 몰려 늦어지거나 빠질 수 있다고 안내함
 - `extract_tags`는 Groq 사용량 제한에 걸리면 60초 쉬고 그 묶음을 한 번 더 보냄. 그래도 실패하면 멈추고 남은 축제는 다음 실행 때 처리
 
 ### 찜 알림 (`send_notifications`)
@@ -109,7 +112,7 @@ for 회차 in 1..5:
 ```
 
 - 같은 알림이 두 번 만들어지지 않도록 DB UNIQUE 제약 사용 ([db-schema.md](db-schema.md))
-- Render 무료 플랜은 요청이 없으면 서버가 잠들어 예약 작업이 안 돌 수 있음 → 6주차 배포 때 외부 cron으로 깨우는 방법 확인 (BE2)
+- 알림은 그 날짜와 정확히 같을 때만 만들어서 하루 실행을 놓치면 그날 알림이 다시 생기지 않음 → **하루 두 번**(09:07, 12:07) 실행. 두 번째는 이미 만든 알림을 건너뜀 (BE2와 합의, 2026-11-19)
 
 ---
 
