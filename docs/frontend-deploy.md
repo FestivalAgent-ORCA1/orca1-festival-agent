@@ -1,10 +1,13 @@
 # 프론트 배포 (Vercel)
 
-> 담당: FE3 · 상태: **배포됨 · API 모드** (2026-11-19 기준)
+> 담당: FE3 · 상태: **배포됨 · API 모드** (2026-11-22 기준)
 
 ## 배포 주소
 
-**https://orca1-festival-agent-frontend.vercel.app**
+**https://orca1-festival-agent.vercel.app**
+
+- 2026-11-22에 주소에서 `-frontend`를 뺀 새 주소를 추가했습니다 (Vercel **Settings → Environments → Production → Domains**). 카카오 Web 도메인(FE2)과 백엔드 `CORS_ORIGINS`(BE1)에도 새 주소가 등록되어 있습니다.
+- 예전 주소 `https://orca1-festival-agent-frontend.vercel.app`도 같은 사이트로 계속 열립니다. 공유할 때는 새 주소를 써 주세요.
 
 - **`develop` 브랜치**를 배포하고, Render 백엔드(`https://orca1-festival-agent.onrender.com`)의 실제 데이터를 씁니다.
 - `develop`에 머지될 때마다 자동으로 다시 배포됩니다.
