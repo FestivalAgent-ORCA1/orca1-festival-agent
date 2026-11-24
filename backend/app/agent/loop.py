@@ -14,7 +14,7 @@ from dataclasses import dataclass, field
 from sqlalchemy.orm import Session
 
 from app.agent import prompts
-from app.agent.client import chat
+from app.agent.client import AiError, chat
 from app.agent.intent import INTENTS
 from app.agent.tool_schemas import CHAT_TOOLS
 from app.services.festival_service import today_kst
@@ -35,6 +35,9 @@ OVERVIEW_CHARS = 200
 SUMMARY_KEYS = ("content_id", "title", "start_date", "end_date", "status", "area_code", "area_name",
                 "address", "image_url", "lng", "lat", "tags", "is_liked")
 TOO_MANY_ROUNDS_TEXT ="질문을 조금 더 구체적으로 알려주시겠어요? 예: '이번 주말 서울에서 하는 음식 축제 알려줘'"
+FOUND_FALLBACK_TEXT = "찾은 축제를 보여드릴게요. 궁금한 축제가 있으면 더 물어봐 주세요."
+# gpt-oss가 추론만 하고 글도 Tool 호출도 없는 빈 답을 낼 때, final_answer를 강제로 한 번 더 부름
+FORCE_FINAL = {"type": "function", "function": {"name": "final_answer"}}
 
 
 @dataclass
@@ -148,6 +151,16 @@ def to_blocks(final: dict, state: ChatState) -> tuple[str, list[dict]]:
 # ---- 반복 처리 ----
 
 
+def flatten_tool_results(messages: list[dict], head: int) -> list[dict]:
+    """messages[:head](지시문·이전 대화·이번 질문)는 그대로, 이후 Tool 호출·결과는 마지막 user 메시지 하나로 합친다"""
+    names = {c["id"]: c["function"]["name"] for m in messages[head:] for c in m.get("tool_calls") or []}
+    results = [f"{names.get(m.get('tool_call_id'), 'tool')}: {m['content']}" for m in messages[head:] if m["role"] == "tool"]
+    question = messages[head - 1]["content"]
+    text = (f"사용자 질문: {question}\n\n지금까지 Tool 결과:\n" + "\n".join(results)
+            + "\n\n이 결과만으로 final_answer Tool을 호출해 답해.")
+    return [*messages[: head - 1], {"role": "user", "content": text}]
+
+
 def run_chat(
     db: Session,
     message: str,
@@ -169,6 +182,26 @@ def run_chat(
     for _ in range(MAX_ROUNDS):
         reply = chat(messages, tools=CHAT_TOOLS, max_tokens=MAX_TOKENS)
         calls = reply.get("tool_calls")
+        if not calls and not (reply.get("content") or "").strip():
+            # 빈 답 (2026-11-24 확인): Tool 결과 메시지가 대화에 있으면 Groq gpt-oss가 최종 답변을 빈 값으로 돌려줌.
+            # Tool 결과를 글 한 덩어리로 바꿔 보내면 정상 응답 → 그 형태로 final_answer 강제 재호출
+            logger.info("AI 빈 답 → Tool 결과를 글로 바꿔 final_answer 재호출")
+            try:
+                reply = chat(flatten_tool_results(messages, len(history) + 2), tools=CHAT_TOOLS,
+                             tool_choice=FORCE_FINAL, max_tokens=MAX_TOKENS)
+                calls = reply.get("tool_calls")
+            except AiError as exc:
+                # 모델이 다른 Tool을 부르려 하면 Groq가 400(tool_use_failed)으로 거절 → 아래 카드 대비책으로
+                if not state.festivals:
+                    raise
+                logger.warning("final_answer 강제 재호출 실패: %s", exc.code)
+                reply, calls = {"role": "assistant", "content": ""}, None
+        if not calls and not (reply.get("content") or "").strip() and state.festivals:
+            # 그래도 비었으면 이번에 찾은 축제를 카드로라도 보여줌 (엉뚱한 "구체적으로" 안내 대신)
+            intent, blocks = to_blocks(
+                {"intent": "recommend", "text": FOUND_FALLBACK_TEXT, "festival_ids": list(state.festivals)}, state
+            )
+            return {"intent": intent, "blocks": blocks}
         if not calls:  # final_answer 없이 글로 답한 경우
             intent, blocks = to_blocks(parse_final(reply["content"]), state)
             return {"intent": intent, "blocks": blocks}
