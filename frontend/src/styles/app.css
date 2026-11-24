@@ -336,6 +336,8 @@
   .search { grid-template-columns: minmax(0, 1fr) 130px 160px; }
   .search .key { white-space: nowrap; }
   .result-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .festival-ticket:nth-child(n) { --tilt: -1deg; margin-top: 0; }
+  .festival-ticket:nth-child(2n) { --tilt: 1deg; margin-top: 16px; }
   .ticket-photo { height: 225px; }
   .ticket-main h3 { font-size: 22px; }
 }
