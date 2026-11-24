@@ -124,6 +124,61 @@ def test_chat_too_many_rounds(client, monkeypatch):
     assert body["intent"] == "unknown" and body["blocks"][0]["text"] == loop.TOO_MANY_ROUNDS_TEXT
 
 
+EMPTY = {"role": "assistant", "content": ""}
+
+
+def test_chat_empty_reply_forces_final_answer(client, db, monkeypatch):
+    # gpt-oss가 Tool 결과를 받고 빈 답을 내면 final_answer를 강제로 한 번 더 부름 (대전 질문에서 발생)
+    add_festival(db, "200", "유성온날", "3")
+    kwargs_seen = []
+    replies = [
+        tool_call("search_festivals", {"start_date": today_kst().isoformat(), "area_codes": ["3"]}),
+        EMPTY,
+        tool_call("final_answer", {"intent": "recommend", "text": "유성온날을 추천해요.", "festival_ids": ["200"]}, "c2"),
+    ]
+
+    def fake_chat(messages, **kwargs):
+        kwargs_seen.append(kwargs | {"messages": messages})
+        return replies.pop(0)
+
+    monkeypatch.setattr(loop, "chat", fake_chat)
+    body = client.post("/api/agent/chat", json={"message": "이번 주말 대전 축제 추천해줘"}).json()
+    assert body["blocks"][0]["text"] == "유성온날을 추천해요."
+    assert body["blocks"][1]["items"][0]["festival"]["content_id"] == "200"
+    retry = kwargs_seen[2]
+    assert retry["tool_choice"] == loop.FORCE_FINAL
+    # 재호출은 Tool 메시지 없이, Tool 결과를 글로 합친 user 메시지 하나로
+    assert [m["role"] for m in retry["messages"]] == ["system", "user"]
+    last = retry["messages"][-1]["content"]
+    assert "이번 주말 대전 축제 추천해줘" in last and "search_festivals:" in last and "유성온날" in last
+
+
+def test_chat_empty_reply_twice_shows_found_cards(client, db, monkeypatch):
+    # 강제 재호출도 비면 "구체적으로" 안내 대신 찾은 축제를 카드로
+    add_festival(db, "200", "유성온날", "3")
+    fake_ai(monkeypatch, [
+        tool_call("search_festivals", {"start_date": today_kst().isoformat(), "area_codes": ["3"]}), EMPTY, EMPTY,
+    ])
+    body = client.post("/api/agent/chat", json={"message": "이번 주말 대전 축제 추천해줘"}).json()
+    assert body["blocks"][0]["text"] == loop.FOUND_FALLBACK_TEXT
+    assert body["blocks"][1]["items"][0]["festival"]["content_id"] == "200"
+
+
+def test_chat_forced_final_error_shows_found_cards(client, db, monkeypatch):
+    # 강제 재호출이 Groq 400으로 실패해도 502 대신 찾은 축제를 카드로
+    add_festival(db, "200", "유성온날", "3")
+    replies = [tool_call("search_festivals", {"start_date": today_kst().isoformat(), "area_codes": ["3"]}), EMPTY]
+
+    def fake_chat(messages, **kwargs):
+        if kwargs.get("tool_choice") == loop.FORCE_FINAL:
+            raise AiError("AI_ERROR")
+        return replies.pop(0)
+
+    monkeypatch.setattr(loop, "chat", fake_chat)
+    res = client.post("/api/agent/chat", json={"message": "이번 주말 대전 축제 추천해줘"})
+    assert res.status_code == 200 and res.json()["blocks"][0]["text"] == loop.FOUND_FALLBACK_TEXT
+
+
 def test_chat_ai_error_is_502(client, monkeypatch):
     def fail(messages, **kwargs):
         raise AiError("AI_RATE_LIMITED", "요청이 많아요.")
